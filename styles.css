@@ -68,11 +68,11 @@ body {
 .app-shell {
   position: relative;
   z-index: 1;
-  max-width: 960px;
+  max-width: 1500px;
   margin: 0 auto;
-  padding: 40px 20px 60px;
+  padding: 36px 24px 64px;
   display: grid;
-  gap: 22px;
+  gap: 18px;
 }
 
 .hero {
@@ -139,7 +139,7 @@ h1 {
 .panel {
   background: var(--card);
   border-radius: 18px;
-  padding: 22px;
+  padding: 20px;
   box-shadow: var(--shadow);
   backdrop-filter: blur(4px);
   animation: rise-in 0.7s ease-out both;
@@ -393,8 +393,8 @@ input[type="text"]:focus {
 .balance-board {
   margin-top: 14px;
   display: grid;
-  grid-template-columns: 1fr 1.2fr 1fr;
-  gap: 10px;
+  grid-template-columns: minmax(280px, 360px) minmax(520px, 1fr) minmax(280px, 360px);
+  gap: 12px;
 }
 
 .board-side,
@@ -556,8 +556,8 @@ input[type="text"]:focus {
 
 .periodic-grid {
   display: grid;
-  grid-template-columns: repeat(18, 42px);
-  grid-template-rows: repeat(9, 34px);
+  grid-template-columns: repeat(18, 56px);
+  grid-template-rows: repeat(9, 44px);
   gap: 6px;
   width: max-content;
 }
@@ -567,9 +567,9 @@ input[type="text"]:focus {
   background: #f4fafc;
   color: #1f4552;
   border-radius: 8px;
-  min-height: 34px;
+  min-height: 44px;
   font-family: "IBM Plex Mono", monospace;
-  font-size: 0.73rem;
+  font-size: 0.85rem;
   cursor: pointer;
 }
 
@@ -641,7 +641,7 @@ input[type="text"]:focus {
 
 @media (max-width: 700px) {
   .app-shell {
-    padding-top: 24px;
+    padding: 24px 14px 48px;
   }
 
   .input-row {
