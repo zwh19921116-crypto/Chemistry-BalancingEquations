@@ -494,11 +494,18 @@ input[type="text"]:focus {
   padding-bottom: 16px;
 }
 
-.periodic-grid {
+.periodic-scroll {
   margin-top: 10px;
+  overflow-x: auto;
+  padding-bottom: 4px;
+}
+
+.periodic-grid {
   display: grid;
-  grid-template-columns: repeat(18, minmax(30px, 1fr));
+  grid-template-columns: repeat(18, 42px);
+  grid-template-rows: repeat(9, 34px);
   gap: 6px;
+  width: max-content;
 }
 
 .el-btn {
@@ -506,7 +513,7 @@ input[type="text"]:focus {
   background: #f4fafc;
   color: #1f4552;
   border-radius: 8px;
-  min-height: 30px;
+  min-height: 34px;
   font-family: "IBM Plex Mono", monospace;
   font-size: 0.73rem;
   cursor: pointer;
@@ -597,10 +604,6 @@ input[type="text"]:focus {
 
   .balance-board {
     grid-template-columns: 1fr;
-  }
-
-  .periodic-grid {
-    grid-template-columns: repeat(9, minmax(30px, 1fr));
   }
 
   .molecule-stage {
