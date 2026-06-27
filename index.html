@@ -41,25 +41,19 @@
             placeholder="Example: Fe + O2 -> Fe2O3"
             required
           />
-          <button type="submit" class="btn btn-primary">Check My Balance</button>
-          <button type="button" id="answer-btn" class="btn btn-secondary">Show Answer</button>
-          <button type="button" id="surprise-btn" class="btn btn-secondary">Surprise Me</button>
+          <button type="submit" class="btn btn-primary">Load Equation</button>
+          <button type="button" id="solve-btn" class="btn btn-secondary">Auto Balance</button>
+          <button type="button" id="surprise-btn" class="btn btn-secondary">Surprise</button>
           <button type="button" id="clear-btn" class="btn btn-ghost">Clear</button>
         </div>
-        <div class="coef-row">
-          <label for="coeff-input">Your Coefficients</label>
-          <input
-            id="coeff-input"
-            name="coefficients"
-            type="text"
-            autocomplete="off"
-            spellcheck="false"
-            placeholder="Example: 4, 3, 2"
-          />
-        </div>
-        <p id="compound-order" class="hint">Order follows the equation from left to right.</p>
-        <p class="hint">Use <code>+</code> between compounds and <code>-></code> or <code>=</code> between sides.</p>
+        <p class="hint">Use <code>+</code> between compounds and <code>-></code> between left and right sides.</p>
       </form>
+
+      <div class="compound-panel" aria-label="Compound controls">
+        <h3>Click To Balance</h3>
+        <p class="hint">Use the + / - buttons to change each compound coefficient.</p>
+        <div id="compound-controls" class="compound-controls"></div>
+      </div>
 
       <div class="preset-wrap" aria-label="Preset equations">
         <button class="chip" data-equation="H2 + O2 -> H2O">Water Formation</button>
@@ -71,17 +65,13 @@
 
     <section class="panel output-panel" aria-live="polite" aria-atomic="true">
       <h2>Result</h2>
-      <div class="score-grid" aria-label="Balancing stats">
-        <div class="score-card"><span>Streak</span><strong id="streak">0</strong></div>
-        <div class="score-card"><span>Best</span><strong id="best-streak">0</strong></div>
-        <div class="score-card"><span>Solved</span><strong id="solved-count">0</strong></div>
-      </div>
-      <p id="status" class="status">Ready to balance.</p>
+      <p id="status" class="status">Load an equation, then click coefficients to balance.</p>
       <div id="result" class="result" role="status"></div>
       <div id="details" class="details"></div>
       <div class="balance-board" aria-label="Element balance board">
         <section class="board-side" aria-labelledby="left-elements-title">
           <h3 id="left-elements-title">Left Elements</h3>
+          <p id="left-guide" class="side-guide">Pick an element below.</p>
           <div id="left-elements" class="element-list"></div>
         </section>
         <section class="board-middle" aria-labelledby="middle-title">
@@ -91,6 +81,7 @@
         </section>
         <section class="board-side" aria-labelledby="right-elements-title">
           <h3 id="right-elements-title">Right Elements</h3>
+          <p id="right-guide" class="side-guide">Pick an element below.</p>
           <div id="right-elements" class="element-list"></div>
         </section>
       </div>
@@ -98,6 +89,12 @@
         <span>Reaction Complexity</span>
         <div class="complexity-track"><div id="complexity-fill" class="complexity-fill"></div></div>
       </div>
+    </section>
+
+    <section class="panel periodic-panel" aria-labelledby="periodic-title">
+      <h2 id="periodic-title">Periodic Table Selector</h2>
+      <p id="selected-element" class="status">Selected element: none</p>
+      <div id="periodic-grid" class="periodic-grid"></div>
     </section>
   </main>
 

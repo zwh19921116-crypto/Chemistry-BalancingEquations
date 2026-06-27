@@ -221,6 +221,11 @@ input[type="text"]:focus {
   color: #f8fdff;
 }
 
+#solve-btn {
+  background: linear-gradient(135deg, #2f7ca1, #57a8cf);
+  color: #f8fdff;
+}
+
 .btn-ghost {
   background: #e9f2f5;
   color: #244552;
@@ -245,6 +250,65 @@ input[type="text"]:focus {
   gap: 8px;
   flex-wrap: wrap;
   margin-top: 14px;
+}
+
+.compound-panel {
+  margin-top: 14px;
+  padding: 12px;
+  border: 1px solid #c9dde3;
+  border-radius: 12px;
+  background: #f6fbfd;
+}
+
+.compound-panel h3 {
+  margin: 0;
+  font-size: 0.98rem;
+}
+
+.compound-controls {
+  margin-top: 10px;
+  display: grid;
+  gap: 8px;
+}
+
+.compound-row {
+  display: grid;
+  grid-template-columns: auto 1fr auto;
+  align-items: center;
+  gap: 8px;
+  background: #edf6f9;
+  border: 1px solid #d3e5eb;
+  border-radius: 10px;
+  padding: 7px;
+}
+
+.compound-term {
+  font-family: "IBM Plex Mono", monospace;
+  color: #193540;
+}
+
+.coef-controls {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+}
+
+.coef-btn {
+  width: 30px;
+  height: 30px;
+  border-radius: 8px;
+  border: 1px solid #a9c6cf;
+  background: #ffffff;
+  color: #1f4653;
+  font-weight: 700;
+  cursor: pointer;
+}
+
+.coef-value {
+  min-width: 24px;
+  text-align: center;
+  font-family: "IBM Plex Mono", monospace;
+  font-weight: 700;
 }
 
 .chip {
@@ -355,6 +419,12 @@ input[type="text"]:focus {
   gap: 6px;
 }
 
+.side-guide {
+  margin: 0 0 8px;
+  font-size: 0.82rem;
+  color: #45626d;
+}
+
 .element-row {
   display: flex;
   justify-content: space-between;
@@ -363,6 +433,11 @@ input[type="text"]:focus {
   border: 1px solid #d4e5ea;
   border-radius: 8px;
   padding: 4px 8px;
+}
+
+.element-row.selected {
+  border-color: #7ea7b4;
+  background: #dff0f6;
 }
 
 .middle-equation {
@@ -413,6 +488,38 @@ input[type="text"]:focus {
   border-radius: 999px;
   background: linear-gradient(90deg, #00a089, #f2a324);
   transition: width 0.35s ease;
+}
+
+.periodic-panel {
+  padding-bottom: 16px;
+}
+
+.periodic-grid {
+  margin-top: 10px;
+  display: grid;
+  grid-template-columns: repeat(18, minmax(30px, 1fr));
+  gap: 6px;
+}
+
+.el-btn {
+  border: 1px solid #b8d0d8;
+  background: #f4fafc;
+  color: #1f4552;
+  border-radius: 8px;
+  min-height: 30px;
+  font-family: "IBM Plex Mono", monospace;
+  font-size: 0.73rem;
+  cursor: pointer;
+}
+
+.el-btn.active {
+  background: #1f6d8b;
+  border-color: #1f6d8b;
+  color: #fff;
+}
+
+.el-btn.dim {
+  opacity: 0.45;
 }
 
 .sr-only {
@@ -490,6 +597,10 @@ input[type="text"]:focus {
 
   .balance-board {
     grid-template-columns: 1fr;
+  }
+
+  .periodic-grid {
+    grid-template-columns: repeat(9, minmax(30px, 1fr));
   }
 
   .molecule-stage {
