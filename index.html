@@ -1,0 +1,78 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Chemical Equation Balancer</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@400;500;700&family=IBM+Plex+Mono:wght@400;600&display=swap" rel="stylesheet" />
+  <link rel="stylesheet" href="styles.css" />
+</head>
+<body>
+  <div class="bg-orb orb-1" aria-hidden="true"></div>
+  <div class="bg-orb orb-2" aria-hidden="true"></div>
+  <div id="celebrate" class="celebrate" aria-hidden="true"></div>
+
+  <main class="app-shell">
+    <header class="hero">
+      <p class="eyebrow">Chemistry Only</p>
+      <h1>Balancing Equations Lab</h1>
+      <p class="subtitle">Balance real chemical reactions with fast integer coefficients and visual feedback.</p>
+      <div class="molecule-stage" aria-hidden="true">
+        <span class="mol m1">H2O</span>
+        <span class="mol m2">CO2</span>
+        <span class="mol m3">O2</span>
+        <span class="mol m4">NaCl</span>
+      </div>
+    </header>
+
+    <section class="panel input-panel" aria-labelledby="input-heading">
+      <h2 id="input-heading">Enter Equation</h2>
+      <form id="balance-form" novalidate>
+        <label for="equation-input" class="sr-only">Chemical equation</label>
+        <div class="input-row">
+          <input
+            id="equation-input"
+            name="equation"
+            type="text"
+            autocomplete="off"
+            spellcheck="false"
+            placeholder="Example: Fe + O2 -> Fe2O3"
+            required
+          />
+          <button type="submit" class="btn btn-primary">Balance</button>
+          <button type="button" id="surprise-btn" class="btn btn-secondary">Surprise Me</button>
+          <button type="button" id="clear-btn" class="btn btn-ghost">Clear</button>
+        </div>
+        <p class="hint">Use <code>+</code> between compounds and <code>-></code> or <code>=</code> between sides.</p>
+      </form>
+
+      <div class="preset-wrap" aria-label="Preset equations">
+        <button class="chip" data-equation="H2 + O2 -> H2O">Water Formation</button>
+        <button class="chip" data-equation="C3H8 + O2 -> CO2 + H2O">Propane Combustion</button>
+        <button class="chip" data-equation="KClO3 -> KCl + O2">Decomposition</button>
+        <button class="chip" data-equation="Na3PO4 + MgCl2 -> NaCl + Mg3(PO4)2">Double Displacement</button>
+      </div>
+    </section>
+
+    <section class="panel output-panel" aria-live="polite" aria-atomic="true">
+      <h2>Result</h2>
+      <div class="score-grid" aria-label="Balancing stats">
+        <div class="score-card"><span>Streak</span><strong id="streak">0</strong></div>
+        <div class="score-card"><span>Best</span><strong id="best-streak">0</strong></div>
+        <div class="score-card"><span>Solved</span><strong id="solved-count">0</strong></div>
+      </div>
+      <p id="status" class="status">Ready to balance.</p>
+      <div id="result" class="result" role="status"></div>
+      <div id="details" class="details"></div>
+      <div class="complexity-wrap" aria-label="Reaction complexity">
+        <span>Reaction Complexity</span>
+        <div class="complexity-track"><div id="complexity-fill" class="complexity-fill"></div></div>
+      </div>
+    </section>
+  </main>
+
+  <script src="app.js"></script>
+</body>
+</html>
