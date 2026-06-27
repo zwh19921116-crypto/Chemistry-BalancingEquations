@@ -165,6 +165,18 @@ h2 {
   gap: 10px;
 }
 
+.coef-row {
+  margin-top: 10px;
+  display: grid;
+  gap: 6px;
+}
+
+.coef-row label {
+  font-size: 0.88rem;
+  color: #36505c;
+  font-weight: 600;
+}
+
 input[type="text"] {
   flex: 1;
   border: 2px solid #cee3e6;
@@ -202,6 +214,11 @@ input[type="text"]:focus {
 .btn-secondary {
   background: linear-gradient(135deg, #f2a324, #f4c045);
   color: #312100;
+}
+
+#answer-btn {
+  background: linear-gradient(135deg, #2f7ca1, #57a8cf);
+  color: #f8fdff;
 }
 
 .btn-ghost {
@@ -309,6 +326,73 @@ input[type="text"]:focus {
   font-size: 0.92rem;
 }
 
+.balance-board {
+  margin-top: 14px;
+  display: grid;
+  grid-template-columns: 1fr 1.2fr 1fr;
+  gap: 10px;
+}
+
+.board-side,
+.board-middle {
+  border: 1px solid #c7dde4;
+  border-radius: 12px;
+  background: #f7fbfd;
+  padding: 10px;
+}
+
+.board-side h3,
+.board-middle h3 {
+  margin: 0 0 8px;
+  font-size: 0.86rem;
+  letter-spacing: 0.05em;
+  text-transform: uppercase;
+  color: #40606d;
+}
+
+.element-list {
+  display: grid;
+  gap: 6px;
+}
+
+.element-row {
+  display: flex;
+  justify-content: space-between;
+  font-family: "IBM Plex Mono", monospace;
+  background: #edf6f9;
+  border: 1px solid #d4e5ea;
+  border-radius: 8px;
+  padding: 4px 8px;
+}
+
+.middle-equation {
+  margin: 0 0 8px;
+  font-family: "IBM Plex Mono", monospace;
+  font-size: 0.88rem;
+  color: #15313c;
+}
+
+.balance-state {
+  margin: 0;
+  display: inline-block;
+  padding: 4px 8px;
+  border-radius: 999px;
+  font-size: 0.8rem;
+  font-weight: 700;
+  background: #e6eef2;
+  color: #36535f;
+}
+
+.balance-state.ok {
+  background: #dff3df;
+  color: #1f6c2a;
+}
+
+.balance-state.bad {
+  background: #fae2e2;
+  color: #8b1f1f;
+}
+
 .complexity-wrap {
   margin-top: 12px;
   font-size: 0.86rem;
@@ -401,6 +485,10 @@ input[type="text"]:focus {
   }
 
   .score-grid {
+    grid-template-columns: 1fr;
+  }
+
+  .balance-board {
     grid-template-columns: 1fr;
   }
 

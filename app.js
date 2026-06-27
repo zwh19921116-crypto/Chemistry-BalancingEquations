@@ -3,11 +3,18 @@ const input = document.getElementById("equation-input");
 const resultNode = document.getElementById("result");
 const statusNode = document.getElementById("status");
 const detailsNode = document.getElementById("details");
+const coeffInput = document.getElementById("coeff-input");
+const orderNode = document.getElementById("compound-order");
+const leftElementsNode = document.getElementById("left-elements");
+const rightElementsNode = document.getElementById("right-elements");
+const middleEquationNode = document.getElementById("middle-equation");
+const middleStatusNode = document.getElementById("middle-status");
 const streakNode = document.getElementById("streak");
 const bestNode = document.getElementById("best-streak");
 const solvedNode = document.getElementById("solved-count");
 const complexityFill = document.getElementById("complexity-fill");
 const surpriseButton = document.getElementById("surprise-btn");
+const answerButton = document.getElementById("answer-btn");
 const clearButton = document.getElementById("clear-btn");
 const celebrateLayer = document.getElementById("celebrate");
 
@@ -23,13 +30,26 @@ const stats = {
 presetButtons.forEach((button) => {
   button.addEventListener("click", () => {
     input.value = button.dataset.equation || "";
-    balanceNow();
+    updateCompoundOrder();
   });
 });
 
 form.addEventListener("submit", (event) => {
   event.preventDefault();
-  balanceNow();
+  checkUserBalance();
+});
+
+input.addEventListener("input", () => {
+  updateCompoundOrder();
+  previewBoardFromInputs();
+});
+
+coeffInput.addEventListener("input", () => {
+  previewBoardFromInputs();
+});
+
+answerButton.addEventListener("click", () => {
+  revealAnswer();
 });
 
 surpriseButton.addEventListener("click", () => {
@@ -39,20 +59,24 @@ surpriseButton.addEventListener("click", () => {
 
   const randomIndex = Math.floor(Math.random() * presetEquations.length);
   input.value = presetEquations[randomIndex];
-  balanceNow();
+  coeffInput.value = "";
+  updateCompoundOrder();
 });
 
 clearButton.addEventListener("click", () => {
   input.value = "";
+  coeffInput.value = "";
   resultNode.textContent = "";
   resultNode.className = "result";
-  statusNode.textContent = "Ready to balance.";
+  statusNode.textContent = "Enter an equation and your coefficients.";
   detailsNode.textContent = "";
   complexityFill.style.width = "0%";
+  orderNode.textContent = "Order follows the equation from left to right.";
+  resetBoard();
   input.focus();
 });
 
-function balanceNow() {
+function checkUserBalance() {
   const equation = input.value.trim();
 
   if (!equation) {
@@ -61,18 +85,55 @@ function balanceNow() {
   }
 
   try {
-    const solved = solveEquation(equation);
-    resultNode.textContent = solved.balanced;
-    resultNode.className = "result success flash";
-    statusNode.textContent = "Balanced successfully.";
-    detailsNode.textContent = `Coefficients: ${solved.coefficients.join(", ")} | Elements: ${solved.elementsCount}`;
-    updateStats(true);
-    updateComplexity(solved);
-    celebrate();
+    const analysis = analyzeEquation(equation);
+    const userCoefficients = parseCoefficientInput(coeffInput.value, analysis.allCompounds.length);
+    renderBalanceBoard(analysis, userCoefficients);
 
-    setTimeout(() => {
-      resultNode.classList.remove("flash");
-    }, 450);
+    if (isBalancedWithCoefficients(analysis.matrix, userCoefficients)) {
+      resultNode.textContent = "Correct. Your equation is balanced.";
+      resultNode.className = "result success flash";
+      statusNode.textContent = "Great chemistry work.";
+      detailsNode.textContent = `Your coefficients: ${userCoefficients.join(", ")} | Simplest form: ${analysis.solved.coefficients.join(", ")}`;
+      updateStats(true);
+      updateComplexity(analysis.solved);
+      celebrate();
+
+      setTimeout(() => {
+        resultNode.classList.remove("flash");
+      }, 450);
+      return;
+    }
+
+    const imbalance = describeImbalance(analysis.matrix, analysis.elements, userCoefficients);
+    resultNode.textContent = "Not balanced yet. Try adjusting your coefficients.";
+    resultNode.className = "result error";
+    statusNode.textContent = "Keep going.";
+    detailsNode.textContent = imbalance;
+    updateStats(false);
+    updateComplexity(analysis.solved);
+  } catch (error) {
+    showError(error.message);
+  }
+}
+
+function revealAnswer() {
+  const equation = input.value.trim();
+
+  if (!equation) {
+    showError("Please enter an equation.");
+    return;
+  }
+
+  try {
+    const analysis = analyzeEquation(equation);
+    const solved = analysis.solved;
+    resultNode.textContent = solved.balanced;
+    resultNode.className = "result success";
+    statusNode.textContent = "Answer revealed.";
+    detailsNode.textContent = `Correct coefficients: ${solved.coefficients.join(", ")}`;
+    coeffInput.value = solved.coefficients.join(", ");
+    renderBalanceBoard(analysis, solved.coefficients);
+    updateComplexity(solved);
   } catch (error) {
     showError(error.message);
   }
@@ -83,7 +144,185 @@ function showError(message) {
   resultNode.className = "result error";
   statusNode.textContent = "Unable to balance this equation.";
   detailsNode.textContent = "Check syntax and ensure both sides contain valid compounds.";
+  resetBoard();
   updateStats(false);
+}
+
+function previewBoardFromInputs() {
+  const equation = input.value.trim();
+
+  if (!equation) {
+    resetBoard();
+    return;
+  }
+
+  try {
+    const parts = analyzeEquationParts(equation);
+    const typedCoefficients = tryParseCoefficientInput(coeffInput.value, parts.allCompounds.length);
+
+    if (typedCoefficients) {
+      renderBalanceBoard(parts, typedCoefficients);
+      return;
+    }
+
+    renderBalanceBoard(parts, null);
+  } catch {
+    resetBoard();
+  }
+}
+
+function resetBoard() {
+  leftElementsNode.innerHTML = "";
+  rightElementsNode.innerHTML = "";
+  middleEquationNode.textContent = "Enter equation and coefficients.";
+  middleStatusNode.textContent = "Status: Waiting";
+  middleStatusNode.className = "balance-state";
+}
+
+function tryParseCoefficientInput(raw, expectedCount) {
+  const parts = raw
+    .split(/[ ,]+/)
+    .map((part) => part.trim())
+    .filter(Boolean);
+
+  if (parts.length !== expectedCount) {
+    return null;
+  }
+
+  const values = parts.map((part) => Number(part));
+  if (values.some((value) => !Number.isInteger(value) || value <= 0)) {
+    return null;
+  }
+
+  return values;
+}
+
+function renderBalanceBoard(analysis, coefficients) {
+  const equationText = coefficients
+    ? `${formatEquationWithCoefficients(analysis.left, coefficients.slice(0, analysis.left.length))} -> ${formatEquationWithCoefficients(analysis.right, coefficients.slice(analysis.left.length))}`
+    : `${analysis.left.join(" + ")} -> ${analysis.right.join(" + ")}`;
+
+  middleEquationNode.textContent = equationText;
+
+  if (!coefficients) {
+    middleStatusNode.textContent = "Status: Waiting for full coefficients";
+    middleStatusNode.className = "balance-state";
+    leftElementsNode.innerHTML = "";
+    rightElementsNode.innerHTML = "";
+    return;
+  }
+
+  const totals = computeSideTotals(analysis, coefficients);
+  const isBalanced = analysis.elements.every((element) => totals.left.get(element) === totals.right.get(element));
+
+  middleStatusNode.textContent = `Status: ${isBalanced ? "Balanced" : "Unbalanced"}`;
+  middleStatusNode.className = `balance-state ${isBalanced ? "ok" : "bad"}`;
+  leftElementsNode.innerHTML = renderElementRows(analysis.elements, totals.left);
+  rightElementsNode.innerHTML = renderElementRows(analysis.elements, totals.right);
+}
+
+function formatEquationWithCoefficients(compounds, coefficients) {
+  return compounds
+    .map((compound, index) => renderTerm(coefficients[index], compound))
+    .join(" + ");
+}
+
+function computeSideTotals(analysis, coefficients) {
+  const left = new Map();
+  const right = new Map();
+
+  analysis.elements.forEach((element) => {
+    left.set(element, 0);
+    right.set(element, 0);
+  });
+
+  analysis.compoundMaps.forEach((compoundMap, index) => {
+    const coef = coefficients[index];
+    analysis.elements.forEach((element) => {
+      const amount = (compoundMap.get(element) || 0) * coef;
+      if (index < analysis.leftCount) {
+        left.set(element, left.get(element) + amount);
+      } else {
+        right.set(element, right.get(element) + amount);
+      }
+    });
+  });
+
+  return { left, right };
+}
+
+function renderElementRows(elements, totals) {
+  return elements
+    .map((element) => `<div class="element-row"><span>${element}</span><strong>${totals.get(element)}</strong></div>`)
+    .join("");
+}
+
+function updateCompoundOrder() {
+  const equation = input.value.trim();
+  if (!equation) {
+    orderNode.textContent = "Order follows the equation from left to right.";
+    return;
+  }
+
+  try {
+    const { left, right } = splitEquation(equation);
+    const ordered = [...left, ...right];
+    orderNode.textContent = `Coefficient order: ${ordered.join(" | ")}`;
+  } catch {
+    orderNode.textContent = "Equation format not recognized yet.";
+  }
+}
+
+function parseCoefficientInput(raw, expectedCount) {
+  const parts = raw
+    .split(/[ ,]+/)
+    .map((part) => part.trim())
+    .filter(Boolean);
+
+  if (parts.length !== expectedCount) {
+    throw new Error(`Enter exactly ${expectedCount} coefficients.`);
+  }
+
+  const values = parts.map((part) => Number(part));
+  if (values.some((value) => !Number.isInteger(value) || value <= 0)) {
+    throw new Error("Coefficients must be positive integers.");
+  }
+
+  return values;
+}
+
+function analyzeEquation(rawEquation) {
+  const parts = analyzeEquationParts(rawEquation);
+  const solved = solveEquation(rawEquation);
+
+  return {
+    ...parts,
+    solved,
+  };
+}
+
+function isBalancedWithCoefficients(matrix, coefficients) {
+  return matrix.every((row) => {
+    const total = row.reduce((sum, value, index) => sum + value * coefficients[index], 0);
+    return total === 0;
+  });
+}
+
+function describeImbalance(matrix, elements, coefficients) {
+  const issues = [];
+
+  matrix.forEach((row, index) => {
+    const total = row.reduce((sum, value, col) => sum + value * coefficients[col], 0);
+    if (total !== 0) {
+      issues.push(`${elements[index]}: ${total > 0 ? "+" : ""}${total}`);
+    }
+  });
+
+  if (issues.length === 0) {
+    return "Close. Re-check your coefficients.";
+  }
+
+  return `Element mismatch (${issues.join(", ")}). Target for each element is 0.`;
 }
 
 function updateStats(success) {
@@ -127,21 +366,14 @@ function celebrate() {
 }
 
 function solveEquation(rawEquation) {
-  const { left, right } = splitEquation(rawEquation);
-
-  if (left.length === 0 || right.length === 0) {
-    throw new Error("Equation must have compounds on both sides.");
-  }
-
-  const allCompounds = [...left, ...right];
-  const compoundMaps = allCompounds.map(parseCompound);
-  const elements = uniqueElements(compoundMaps);
-
-  if (elements.length === 0) {
-    throw new Error("No valid elements found.");
-  }
-
-  const matrix = buildMatrix(elements, compoundMaps, left.length);
+  const analysis = analyzeEquationParts(rawEquation);
+  const {
+    left,
+    right,
+    allCompounds,
+    elements,
+    matrix,
+  } = analysis;
   const solution = nullspaceVector(matrix);
   const coefficients = normalizeToIntegers(solution);
 
@@ -163,6 +395,34 @@ function solveEquation(rawEquation) {
     elementsCount: elements.length,
     compoundsCount: allCompounds.length,
     maxCoefficient: Math.max(...coefficients),
+  };
+}
+
+function analyzeEquationParts(rawEquation) {
+  const { left, right } = splitEquation(rawEquation);
+
+  if (left.length === 0 || right.length === 0) {
+    throw new Error("Equation must have compounds on both sides.");
+  }
+
+  const allCompounds = [...left, ...right];
+  const compoundMaps = allCompounds.map(parseCompound);
+  const elements = uniqueElements(compoundMaps);
+
+  if (elements.length === 0) {
+    throw new Error("No valid elements found.");
+  }
+
+  const matrix = buildMatrix(elements, compoundMaps, left.length);
+
+  return {
+    left,
+    right,
+    allCompounds,
+    compoundMaps,
+    leftCount: left.length,
+    elements,
+    matrix,
   };
 }
 

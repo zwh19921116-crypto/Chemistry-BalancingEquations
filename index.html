@@ -41,10 +41,23 @@
             placeholder="Example: Fe + O2 -> Fe2O3"
             required
           />
-          <button type="submit" class="btn btn-primary">Balance</button>
+          <button type="submit" class="btn btn-primary">Check My Balance</button>
+          <button type="button" id="answer-btn" class="btn btn-secondary">Show Answer</button>
           <button type="button" id="surprise-btn" class="btn btn-secondary">Surprise Me</button>
           <button type="button" id="clear-btn" class="btn btn-ghost">Clear</button>
         </div>
+        <div class="coef-row">
+          <label for="coeff-input">Your Coefficients</label>
+          <input
+            id="coeff-input"
+            name="coefficients"
+            type="text"
+            autocomplete="off"
+            spellcheck="false"
+            placeholder="Example: 4, 3, 2"
+          />
+        </div>
+        <p id="compound-order" class="hint">Order follows the equation from left to right.</p>
         <p class="hint">Use <code>+</code> between compounds and <code>-></code> or <code>=</code> between sides.</p>
       </form>
 
@@ -66,6 +79,21 @@
       <p id="status" class="status">Ready to balance.</p>
       <div id="result" class="result" role="status"></div>
       <div id="details" class="details"></div>
+      <div class="balance-board" aria-label="Element balance board">
+        <section class="board-side" aria-labelledby="left-elements-title">
+          <h3 id="left-elements-title">Left Elements</h3>
+          <div id="left-elements" class="element-list"></div>
+        </section>
+        <section class="board-middle" aria-labelledby="middle-title">
+          <h3 id="middle-title">Molecular Structure</h3>
+          <p id="middle-equation" class="middle-equation">Enter equation and coefficients.</p>
+          <p id="middle-status" class="balance-state">Status: Waiting</p>
+        </section>
+        <section class="board-side" aria-labelledby="right-elements-title">
+          <h3 id="right-elements-title">Right Elements</h3>
+          <div id="right-elements" class="element-list"></div>
+        </section>
+      </div>
       <div class="complexity-wrap" aria-label="Reaction complexity">
         <span>Reaction Complexity</span>
         <div class="complexity-track"><div id="complexity-fill" class="complexity-fill"></div></div>
