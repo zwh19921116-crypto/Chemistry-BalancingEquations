@@ -49,12 +49,6 @@
         <p class="hint">Use <code>+</code> between compounds and <code>-></code> between left and right sides.</p>
       </form>
 
-      <div class="compound-panel" aria-label="Compound controls">
-        <h3>Click To Balance</h3>
-        <p class="hint">Use the + / - buttons to change each compound coefficient.</p>
-        <div id="compound-controls" class="compound-controls"></div>
-      </div>
-
       <div class="preset-wrap" aria-label="Preset equations">
         <button class="chip" data-equation="H2 + O2 -> H2O">Water Formation</button>
         <button class="chip" data-equation="C3H8 + O2 -> CO2 + H2O">Propane Combustion</button>
@@ -71,18 +65,19 @@
       <div class="balance-board" aria-label="Element balance board">
         <section class="board-side" aria-labelledby="left-elements-title">
           <h3 id="left-elements-title">Before -> (Left)</h3>
-          <p id="left-guide" class="side-guide">Pick an element below.</p>
-          <div id="left-elements" class="element-list"></div>
+          <p class="side-guide">Left Side (Reactants)</p>
+          <div id="left-equation-controls" class="side-controls"></div>
         </section>
         <section class="board-middle" aria-labelledby="middle-title">
           <h3 id="middle-title">Current Balance Status</h3>
-          <p id="middle-equation" class="middle-equation">Enter equation and coefficients.</p>
+          <p id="middle-equation" class="middle-equation">Enter equation and click Load Equation.</p>
           <p id="middle-status" class="balance-state">Status: Waiting</p>
+          <div id="middle-atom-table" class="atom-table"></div>
         </section>
         <section class="board-side" aria-labelledby="right-elements-title">
           <h3 id="right-elements-title">After -> (Right)</h3>
-          <p id="right-guide" class="side-guide">Pick an element below.</p>
-          <div id="right-elements" class="element-list"></div>
+          <p class="side-guide">Right Side (Products)</p>
+          <div id="right-equation-controls" class="side-controls"></div>
         </section>
       </div>
       <div class="complexity-wrap" aria-label="Reaction complexity">

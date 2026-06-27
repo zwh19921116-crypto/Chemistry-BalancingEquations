@@ -3,13 +3,11 @@ const input = document.getElementById("equation-input");
 const resultNode = document.getElementById("result");
 const statusNode = document.getElementById("status");
 const detailsNode = document.getElementById("details");
-const leftElementsNode = document.getElementById("left-elements");
-const rightElementsNode = document.getElementById("right-elements");
-const leftGuideNode = document.getElementById("left-guide");
-const rightGuideNode = document.getElementById("right-guide");
+const leftEquationNode = document.getElementById("left-equation-controls");
+const rightEquationNode = document.getElementById("right-equation-controls");
 const middleEquationNode = document.getElementById("middle-equation");
 const middleStatusNode = document.getElementById("middle-status");
-const compoundControlsNode = document.getElementById("compound-controls");
+const middleAtomTableNode = document.getElementById("middle-atom-table");
 const solveButton = document.getElementById("solve-btn");
 const surpriseButton = document.getElementById("surprise-btn");
 const clearButton = document.getElementById("clear-btn");
@@ -70,7 +68,7 @@ solveButton.addEventListener("click", () => {
   }
 
   state.coefficients = [...state.solved.coefficients];
-  renderCompoundControls();
+  renderSideControls();
   renderBoard();
 });
 
@@ -85,7 +83,8 @@ clearButton.addEventListener("click", () => {
   resultNode.className = "result";
   detailsNode.textContent = "";
   complexityFill.style.width = "0%";
-  compoundControlsNode.innerHTML = "";
+  leftEquationNode.innerHTML = "";
+  rightEquationNode.innerHTML = "";
   resetBoard();
   renderPeriodicAvailability();
 });
@@ -110,10 +109,10 @@ function loadEquation() {
     statusNode.textContent = "Click +/- on compounds to balance.";
     resultNode.textContent = "Equation loaded.";
     resultNode.className = "result";
-    detailsNode.textContent = "Select an element at the bottom for focused guidance.";
+    detailsNode.textContent = "Click +/- in left and right panels to balance.";
     updateComplexity(state.solved);
 
-    renderCompoundControls();
+    renderSideControls();
     renderPeriodicAvailability();
     renderBoard();
   } catch (error) {
@@ -121,30 +120,17 @@ function loadEquation() {
   }
 }
 
-function renderCompoundControls() {
+function renderSideControls() {
   if (!state.analysis) {
-    compoundControlsNode.innerHTML = "";
+    leftEquationNode.innerHTML = "";
+    rightEquationNode.innerHTML = "";
     return;
   }
 
-  compoundControlsNode.innerHTML = state.analysis.allCompounds
-    .map((compound, index) => {
-      const side = index < state.analysis.leftCount ? "L" : "R";
-      return `
-        <div class="compound-row">
-          <span class="compound-term">${side}: ${compound}</span>
-          <div class="coef-controls">
-            <button class="coef-btn" data-action="dec" data-index="${index}" type="button">-</button>
-            <span class="coef-value" id="coef-${index}">${state.coefficients[index]}</span>
-            <button class="coef-btn" data-action="inc" data-index="${index}" type="button">+</button>
-          </div>
-          <span class="compound-term">coef</span>
-        </div>
-      `;
-    })
-    .join("");
+  leftEquationNode.innerHTML = renderSideRows(0, state.analysis.leftCount);
+  rightEquationNode.innerHTML = renderSideRows(state.analysis.leftCount, state.analysis.allCompounds.length);
 
-  compoundControlsNode.querySelectorAll(".coef-btn").forEach((button) => {
+  document.querySelectorAll(".coef-btn").forEach((button) => {
     button.addEventListener("click", () => {
       const index = Number(button.dataset.index);
       const action = button.dataset.action;
@@ -157,10 +143,31 @@ function renderCompoundControls() {
         state.coefficients[index] = Math.max(1, state.coefficients[index] - 1);
       }
 
-      renderCompoundControls();
+      renderSideControls();
       renderBoard();
     });
   });
+}
+
+function renderSideRows(start, end) {
+  const rows = [];
+
+  for (let i = start; i < end; i += 1) {
+    const plus = i === start ? "" : "+";
+    rows.push(`
+      <div class="side-row">
+        <span class="side-plus">${plus}</span>
+        <div class="coef-controls">
+          <button class="coef-btn" data-action="dec" data-index="${i}" type="button">-</button>
+          <span class="coef-value">${state.coefficients[i]}</span>
+          <button class="coef-btn" data-action="inc" data-index="${i}" type="button">+</button>
+        </div>
+        <span class="side-compound">${state.analysis.allCompounds[i]}</span>
+      </div>
+    `);
+  }
+
+  return rows.join("");
 }
 
 function renderBoard() {
@@ -170,37 +177,13 @@ function renderBoard() {
   }
 
   const totals = computeSideTotals(state.analysis, state.coefficients);
-  const selected = state.selectedElement;
 
   middleEquationNode.textContent = `${formatEquationWithCoefficients(state.analysis.left, state.coefficients.slice(0, state.analysis.leftCount))} -> ${formatEquationWithCoefficients(state.analysis.right, state.coefficients.slice(state.analysis.leftCount))}`;
 
   const balanced = state.analysis.elements.every((element) => totals.left.get(element) === totals.right.get(element));
   middleStatusNode.textContent = `Status: ${balanced ? "Balanced" : "Unbalanced"}`;
   middleStatusNode.className = `balance-state ${balanced ? "ok" : "bad"}`;
-
-  leftElementsNode.innerHTML = renderElementRows(state.analysis.elements, totals.left, selected);
-  rightElementsNode.innerHTML = renderElementRows(state.analysis.elements, totals.right, selected);
-
-  if (selected) {
-    const leftTotal = totals.left.get(selected) || 0;
-    const rightTotal = totals.right.get(selected) || 0;
-    const leftContains = compoundsContaining(state.analysis, selected, "left");
-    const rightContains = compoundsContaining(state.analysis, selected, "right");
-
-    if (leftTotal === rightTotal) {
-      leftGuideNode.textContent = `${selected} is balanced on LEFT.`;
-      rightGuideNode.textContent = `${selected} is balanced on RIGHT.`;
-    } else if (leftTotal < rightTotal) {
-      leftGuideNode.textContent = `Add more ${selected} on LEFT. Try + on: ${leftContains}`;
-      rightGuideNode.textContent = `Add less ${selected} on RIGHT. Try - on: ${rightContains}`;
-    } else {
-      leftGuideNode.textContent = `Add less ${selected} on LEFT. Try - on: ${leftContains}`;
-      rightGuideNode.textContent = `Add more ${selected} on RIGHT. Try + on: ${rightContains}`;
-    }
-  } else {
-    leftGuideNode.textContent = "Pick an element below.";
-    rightGuideNode.textContent = "Pick an element below.";
-  }
+  middleAtomTableNode.innerHTML = renderAtomTable(state.analysis.elements, totals, state.selectedElement);
 
   if (balanced) {
     resultNode.textContent = "Balanced. Nice work.";
@@ -212,14 +195,29 @@ function renderBoard() {
     statusNode.textContent = "Unbalanced.";
   }
 
-  if (selected) {
-    const delta = (totals.left.get(selected) || 0) - (totals.right.get(selected) || 0);
-    detailsNode.textContent = `${selected} difference (left - right): ${delta}`;
+  if (state.selectedElement) {
+    const delta = (totals.left.get(state.selectedElement) || 0) - (totals.right.get(state.selectedElement) || 0);
+    detailsNode.textContent = `${state.selectedElement} difference (before - after): ${delta}`;
   } else {
     detailsNode.textContent = "Select an element for directional help.";
   }
 
   renderPeriodicAvailability();
+}
+
+function renderAtomTable(elements, totals, selectedElement) {
+  const head = "<div class=\"atom-head\"><span>ATOM</span><span>Before</span><span>After</span><span>OK?</span></div>";
+  const rows = elements
+    .map((element) => {
+      const left = totals.left.get(element) || 0;
+      const right = totals.right.get(element) || 0;
+      const ok = left === right;
+      const rowClass = selectedElement === element ? "atom-row highlight" : "atom-row";
+      return `<div class=\"${rowClass}\"><span>${element}</span><span>${left}</span><span>${right}</span><span class=\"${ok ? "atom-ok" : "atom-bad"}\">${ok ? "Yes" : "No"}</span></div>`;
+    })
+    .join("");
+
+  return `${head}${rows}`;
 }
 
 function buildPeriodicGrid() {
@@ -249,13 +247,12 @@ function renderPeriodicAvailability() {
 }
 
 function resetBoard() {
-  leftElementsNode.innerHTML = "";
-  rightElementsNode.innerHTML = "";
-  leftGuideNode.textContent = "Pick an element below.";
-  rightGuideNode.textContent = "Pick an element below.";
+  leftEquationNode.innerHTML = "";
+  rightEquationNode.innerHTML = "";
   middleEquationNode.textContent = "Enter equation and click Load Equation.";
   middleStatusNode.textContent = "Status: Waiting";
   middleStatusNode.className = "balance-state";
+  middleAtomTableNode.innerHTML = "";
   selectedElementNode.textContent = "Selected element: none";
 }
 
@@ -264,29 +261,6 @@ function showError(message) {
   resultNode.className = "result error";
   statusNode.textContent = "Unable to process equation.";
   detailsNode.textContent = "Check syntax and compound format.";
-}
-
-function renderElementRows(elements, totals, selected) {
-  return elements
-    .map((element) => {
-      const selectedClass = selected === element ? " selected" : "";
-      return `<div class="element-row${selectedClass}"><span>${element}</span><strong>${totals.get(element)}</strong></div>`;
-    })
-    .join("");
-}
-
-function compoundsContaining(analysis, element, side) {
-  const start = side === "left" ? 0 : analysis.leftCount;
-  const end = side === "left" ? analysis.leftCount : analysis.allCompounds.length;
-  const names = [];
-
-  for (let i = start; i < end; i += 1) {
-    if ((analysis.compoundMaps[i].get(element) || 0) > 0) {
-      names.push(analysis.allCompounds[i]);
-    }
-  }
-
-  return names.length > 0 ? names.join("/") : "none";
 }
 
 function computeSideTotals(analysis, coefficients) {

@@ -414,7 +414,7 @@ input[type="text"]:focus {
   color: #40606d;
 }
 
-.element-list {
+.side-controls {
   display: grid;
   gap: 6px;
 }
@@ -425,19 +425,73 @@ input[type="text"]:focus {
   color: #45626d;
 }
 
-.element-row {
-  display: flex;
-  justify-content: space-between;
-  font-family: "IBM Plex Mono", monospace;
-  background: #edf6f9;
-  border: 1px solid #d4e5ea;
-  border-radius: 8px;
-  padding: 4px 8px;
+.side-row {
+  display: grid;
+  grid-template-columns: 16px 92px 1fr;
+  align-items: center;
+  gap: 8px;
 }
 
-.element-row.selected {
-  border-color: #7ea7b4;
+.side-plus {
+  font-size: 1.6rem;
+  line-height: 1;
+  color: #6f8a95;
+  text-align: center;
+}
+
+.coef-controls {
+  background: #edf6f9;
+  border: 1px solid #d3e5eb;
+  border-radius: 10px;
+  padding: 4px;
+  justify-content: center;
+}
+
+.side-compound {
+  font-family: "IBM Plex Mono", monospace;
+  font-size: 1.25rem;
+  color: #193540;
+}
+
+.atom-table {
+  margin-top: 10px;
+  border: 1px solid #c7dde4;
+  border-radius: 10px;
+  overflow: hidden;
+}
+
+.atom-head,
+.atom-row {
+  display: grid;
+  grid-template-columns: 1.4fr 0.8fr 0.8fr 0.7fr;
+  padding: 6px 8px;
+  font-family: "IBM Plex Mono", monospace;
+  font-size: 0.78rem;
+}
+
+.atom-head {
+  background: #e8f2f6;
+  color: #2f4f5d;
+  font-weight: 700;
+}
+
+.atom-row {
+  border-top: 1px solid #d6e7ed;
+  background: #f8fcfd;
+}
+
+.atom-row.highlight {
   background: #dff0f6;
+}
+
+.atom-ok {
+  color: #1f6c2a;
+  font-weight: 700;
+}
+
+.atom-bad {
+  color: #8b1f1f;
+  font-weight: 700;
 }
 
 .middle-equation {
