@@ -290,13 +290,16 @@ function renderVisualMolecule(compound, coefficient) {
   const tone = elementTone(key);
   const visibleCount = Math.min(6, Math.max(1, coefficient));
   const overflow = coefficient > 6 ? `<span class="dot-more">+${coefficient - 6}</span>` : "";
-  const dots = Array.from({ length: visibleCount }, () => `<span class="atom-dot ${tone}"></span>`).join("");
+  const units = Array.from(
+    { length: visibleCount },
+    () => `<span class="mini-molecule"><span class="atom-dot ${tone}"></span><span class="atom-bond mini-bond"></span><span class="atom-dot ${tone}"></span></span>`,
+  ).join("");
 
   return `
     <div class="visual-row">
       <span class="visual-label">${coefficient}${compound}</span>
       <div class="visual-molecule">
-        <div class="dot-track">${dots}</div>
+        <div class="dot-track">${units}</div>
         ${overflow}
       </div>
     </div>

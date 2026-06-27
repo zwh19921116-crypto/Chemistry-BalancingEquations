@@ -535,8 +535,14 @@ input[type="text"]:focus {
 .dot-track {
   display: flex;
   align-items: center;
-  gap: 4px;
+  gap: 6px;
   flex-wrap: wrap;
+}
+
+.mini-molecule {
+  display: inline-flex;
+  align-items: center;
+  gap: 3px;
 }
 
 .dot-more {
@@ -557,6 +563,11 @@ input[type="text"]:focus {
   height: 5px;
   border-radius: 999px;
   background: linear-gradient(90deg, #aac1d8, #eaf2f9);
+}
+
+.mini-bond {
+  width: 14px;
+  height: 4px;
 }
 
 .tone-red {
