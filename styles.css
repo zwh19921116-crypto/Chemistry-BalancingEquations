@@ -512,15 +512,42 @@ input[type="text"]:focus {
 }
 
 .visual-molecule {
+  min-height: 26px;
   display: flex;
   align-items: center;
-  justify-content: center;
+  justify-content: flex-start;
   gap: 6px;
 }
 
+.visual-row {
+  display: grid;
+  grid-template-columns: 88px 1fr;
+  align-items: center;
+  gap: 8px;
+}
+
+.visual-label {
+  font-family: "IBM Plex Mono", monospace;
+  font-size: 0.8rem;
+  color: #cde5fa;
+}
+
+.dot-track {
+  display: flex;
+  align-items: center;
+  gap: 4px;
+  flex-wrap: wrap;
+}
+
+.dot-more {
+  font-family: "IBM Plex Mono", monospace;
+  font-size: 0.72rem;
+  color: #9dc2df;
+}
+
 .atom-dot {
-  width: 28px;
-  height: 28px;
+  width: 18px;
+  height: 18px;
   border-radius: 50%;
   box-shadow: inset -4px -4px 7px rgba(0, 0, 0, 0.4), inset 3px 3px 5px rgba(255, 255, 255, 0.2);
 }
@@ -932,6 +959,107 @@ input[type="text"]::placeholder {
     opacity: 0;
     transform: translate(var(--tx), var(--ty)) scale(0.2);
   }
+}
+
+/* Final reference-style override */
+.molecule-stage {
+  display: none;
+}
+
+.panel {
+  background: linear-gradient(180deg, rgba(8, 36, 66, 0.86), rgba(5, 23, 43, 0.9));
+  border: 1px solid rgba(87, 145, 189, 0.55);
+  box-shadow: 0 20px 48px rgba(0, 7, 20, 0.5);
+}
+
+.output-panel,
+.periodic-panel {
+  background: linear-gradient(180deg, rgba(8, 36, 66, 0.9), rgba(4, 20, 39, 0.93));
+}
+
+h2,
+.board-side h3,
+.board-middle h3 {
+  color: #64d2ff;
+}
+
+.hint,
+.status,
+.details,
+.side-guide {
+  color: #a8c8e1;
+}
+
+.result {
+  background: rgba(9, 35, 61, 0.82);
+  border: 1px dashed rgba(118, 175, 210, 0.45);
+  color: #d8ebfb;
+}
+
+.board-side,
+.board-middle {
+  border: 1px solid rgba(88, 145, 189, 0.52);
+  background: linear-gradient(180deg, rgba(8, 41, 71, 0.86), rgba(5, 24, 44, 0.9));
+}
+
+.side-plus {
+  color: #c2d9ea;
+}
+
+.side-compound,
+.middle-equation,
+.coef-value {
+  color: #eaf4ff;
+}
+
+.atom-table {
+  border: 1px solid rgba(98, 155, 197, 0.56);
+}
+
+.atom-head {
+  background: rgba(17, 60, 96, 0.9);
+  color: #d2e9fb;
+  border-bottom: 1px solid rgba(105, 162, 202, 0.6);
+}
+
+.atom-row {
+  background: rgba(8, 33, 57, 0.82);
+  color: #def0ff;
+}
+
+.atom-row + .atom-row {
+  border-top: 1px solid rgba(101, 159, 194, 0.38);
+}
+
+.atom-head span,
+.atom-row span {
+  border-right: 1px solid rgba(101, 159, 194, 0.34);
+}
+
+.atom-head span:last-child,
+.atom-row span:last-child {
+  border-right: none;
+}
+
+.atom-row.highlight {
+  background: rgba(30, 78, 115, 0.82);
+}
+
+.coef-controls {
+  background: rgba(9, 35, 59, 0.92);
+  border-color: rgba(99, 150, 187, 0.46);
+}
+
+.coef-btn {
+  background: rgba(18, 54, 86, 0.95);
+  border-color: rgba(106, 161, 196, 0.48);
+  color: #f1f8ff;
+}
+
+.el-btn {
+  background: linear-gradient(180deg, rgba(25, 64, 95, 0.92), rgba(18, 49, 74, 0.95));
+  border-color: rgba(108, 161, 195, 0.5);
+  color: #d9edff;
 }
 
 @media (max-width: 700px) {

@@ -225,7 +225,7 @@ function renderBoard() {
   const balanced = state.analysis.elements.every((element) => totals.left.get(element) === totals.right.get(element));
   middleStatusNode.textContent = `Status: ${balanced ? "Balanced" : "Unbalanced"}`;
   middleStatusNode.className = `balance-state ${balanced ? "ok" : "bad"}`;
-  middleVisualNode.innerHTML = renderMoleculeVisual(state.analysis);
+  middleVisualNode.innerHTML = renderMoleculeVisual(state.analysis, state.coefficients);
   middleAtomTableNode.innerHTML = renderAtomTable(state.analysis.elements, totals, state.selectedElement);
   middleLegendNode.innerHTML = renderMiddleLegend(state.analysis.elements);
 
@@ -264,9 +264,16 @@ function renderAtomTable(elements, totals, selectedElement) {
   return `${head}${rows}`;
 }
 
-function renderMoleculeVisual(analysis) {
-  const leftVisual = analysis.left.slice(0, 3).map((compound) => renderVisualMolecule(compound)).join("");
-  const rightVisual = analysis.right.slice(0, 3).map((compound) => renderVisualMolecule(compound)).join("");
+function renderMoleculeVisual(analysis, coefficients) {
+  const leftVisual = analysis.left
+    .slice(0, 3)
+    .map((compound, index) => renderVisualMolecule(compound, coefficients[index]))
+    .join("");
+
+  const rightVisual = analysis.right
+    .slice(0, 3)
+    .map((compound, index) => renderVisualMolecule(compound, coefficients[analysis.leftCount + index]))
+    .join("");
 
   return `
     <div class="visual-block">
@@ -277,15 +284,21 @@ function renderMoleculeVisual(analysis) {
   `;
 }
 
-function renderVisualMolecule(compound) {
+function renderVisualMolecule(compound, coefficient) {
   const first = compound.match(/[A-Z][a-z]?/);
   const key = first ? first[0] : "X";
   const tone = elementTone(key);
+  const visibleCount = Math.min(6, Math.max(1, coefficient));
+  const overflow = coefficient > 6 ? `<span class="dot-more">+${coefficient - 6}</span>` : "";
+  const dots = Array.from({ length: visibleCount }, () => `<span class="atom-dot ${tone}"></span>`).join("");
+
   return `
-    <div class="visual-molecule">
-      <span class="atom-dot ${tone}"></span>
-      <span class="atom-bond"></span>
-      <span class="atom-dot ${tone}"></span>
+    <div class="visual-row">
+      <span class="visual-label">${coefficient}${compound}</span>
+      <div class="visual-molecule">
+        <div class="dot-track">${dots}</div>
+        ${overflow}
+      </div>
     </div>
   `;
 }
