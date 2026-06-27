@@ -67,17 +67,27 @@
           <h3 id="left-elements-title">Before -> (Left)</h3>
           <p class="side-guide">Left Side (Reactants)</p>
           <div id="left-equation-controls" class="side-controls"></div>
+          <div class="side-actions">
+            <button id="left-add-btn" class="btn btn-ghost side-action" type="button">+ Add Molecule</button>
+            <button id="left-clear-btn" class="btn btn-ghost side-action" type="button">Clear</button>
+          </div>
         </section>
         <section class="board-middle" aria-labelledby="middle-title">
           <h3 id="middle-title">Current Balance Status</h3>
           <p id="middle-equation" class="middle-equation">Enter equation and click Load Equation.</p>
           <p id="middle-status" class="balance-state">Status: Waiting</p>
+          <div id="middle-visual" class="middle-visual"></div>
           <div id="middle-atom-table" class="atom-table"></div>
+          <div id="middle-legend" class="middle-legend"></div>
         </section>
         <section class="board-side" aria-labelledby="right-elements-title">
           <h3 id="right-elements-title">After -> (Right)</h3>
           <p class="side-guide">Right Side (Products)</p>
           <div id="right-equation-controls" class="side-controls"></div>
+          <div class="side-actions">
+            <button id="right-add-btn" class="btn btn-ghost side-action" type="button">+ Add Molecule</button>
+            <button id="right-clear-btn" class="btn btn-ghost side-action" type="button">Clear</button>
+          </div>
         </section>
       </div>
       <div class="complexity-wrap" aria-label="Reaction complexity">

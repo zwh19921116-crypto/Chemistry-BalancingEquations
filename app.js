@@ -7,7 +7,13 @@ const leftEquationNode = document.getElementById("left-equation-controls");
 const rightEquationNode = document.getElementById("right-equation-controls");
 const middleEquationNode = document.getElementById("middle-equation");
 const middleStatusNode = document.getElementById("middle-status");
+const middleVisualNode = document.getElementById("middle-visual");
 const middleAtomTableNode = document.getElementById("middle-atom-table");
+const middleLegendNode = document.getElementById("middle-legend");
+const leftAddButton = document.getElementById("left-add-btn");
+const leftClearButton = document.getElementById("left-clear-btn");
+const rightAddButton = document.getElementById("right-add-btn");
+const rightClearButton = document.getElementById("right-clear-btn");
 const solveButton = document.getElementById("solve-btn");
 const surpriseButton = document.getElementById("surprise-btn");
 const clearButton = document.getElementById("clear-btn");
@@ -89,6 +95,40 @@ clearButton.addEventListener("click", () => {
   renderPeriodicAvailability();
 });
 
+leftAddButton.addEventListener("click", () => {
+  detailsNode.textContent = "Use the equation input to add new molecules, then click Load Equation.";
+});
+
+rightAddButton.addEventListener("click", () => {
+  detailsNode.textContent = "Use the equation input to add new molecules, then click Load Equation.";
+});
+
+leftClearButton.addEventListener("click", () => {
+  if (!state.analysis) {
+    return;
+  }
+
+  for (let i = 0; i < state.analysis.leftCount; i += 1) {
+    state.coefficients[i] = 1;
+  }
+
+  renderSideControls();
+  renderBoard();
+});
+
+rightClearButton.addEventListener("click", () => {
+  if (!state.analysis) {
+    return;
+  }
+
+  for (let i = state.analysis.leftCount; i < state.analysis.allCompounds.length; i += 1) {
+    state.coefficients[i] = 1;
+  }
+
+  renderSideControls();
+  renderBoard();
+});
+
 function loadEquation() {
   const equation = input.value.trim();
 
@@ -157,10 +197,12 @@ function renderSideRows(start, end) {
     rows.push(`
       <div class="side-row">
         <span class="side-plus">${plus}</span>
-        <div class="coef-controls">
-          <button class="coef-btn" data-action="dec" data-index="${i}" type="button">-</button>
+        <div class="coef-controls spinner-box">
           <span class="coef-value">${state.coefficients[i]}</span>
-          <button class="coef-btn" data-action="inc" data-index="${i}" type="button">+</button>
+          <div class="spin-btns">
+            <button class="coef-btn spin-btn" data-action="inc" data-index="${i}" type="button" aria-label="Increase coefficient">▲</button>
+            <button class="coef-btn spin-btn" data-action="dec" data-index="${i}" type="button" aria-label="Decrease coefficient">▼</button>
+          </div>
         </div>
         <span class="side-compound">${state.analysis.allCompounds[i]}</span>
       </div>
@@ -183,7 +225,9 @@ function renderBoard() {
   const balanced = state.analysis.elements.every((element) => totals.left.get(element) === totals.right.get(element));
   middleStatusNode.textContent = `Status: ${balanced ? "Balanced" : "Unbalanced"}`;
   middleStatusNode.className = `balance-state ${balanced ? "ok" : "bad"}`;
+  middleVisualNode.innerHTML = renderMoleculeVisual(state.analysis);
   middleAtomTableNode.innerHTML = renderAtomTable(state.analysis.elements, totals, state.selectedElement);
+  middleLegendNode.innerHTML = renderMiddleLegend(state.analysis.elements);
 
   if (balanced) {
     resultNode.textContent = "Balanced. Nice work.";
@@ -220,6 +264,59 @@ function renderAtomTable(elements, totals, selectedElement) {
   return `${head}${rows}`;
 }
 
+function renderMoleculeVisual(analysis) {
+  const leftVisual = analysis.left.slice(0, 3).map((compound) => renderVisualMolecule(compound)).join("");
+  const rightVisual = analysis.right.slice(0, 3).map((compound) => renderVisualMolecule(compound)).join("");
+
+  return `
+    <div class="visual-block">
+      <div class="visual-col">${leftVisual}</div>
+      <div class="visual-arrow">→</div>
+      <div class="visual-col">${rightVisual}</div>
+    </div>
+  `;
+}
+
+function renderVisualMolecule(compound) {
+  const first = compound.match(/[A-Z][a-z]?/);
+  const key = first ? first[0] : "X";
+  const tone = elementTone(key);
+  return `
+    <div class="visual-molecule">
+      <span class="atom-dot ${tone}"></span>
+      <span class="atom-bond"></span>
+      <span class="atom-dot ${tone}"></span>
+    </div>
+  `;
+}
+
+function renderMiddleLegend(elements) {
+  return elements.slice(0, 6).map((el) => {
+    const tone = elementTone(el);
+    return `<span class="legend-chip"><span class="legend-dot ${tone}"></span>${el}</span>`;
+  }).join("");
+}
+
+function elementTone(symbol) {
+  if (symbol === "O") {
+    return "tone-red";
+  }
+
+  if (symbol === "N") {
+    return "tone-blue";
+  }
+
+  if (symbol === "H") {
+    return "tone-white";
+  }
+
+  if (symbol === "Cl" || symbol === "F") {
+    return "tone-green";
+  }
+
+  return "tone-white";
+}
+
 function buildPeriodicGrid() {
   periodicGridNode.innerHTML = periodicLayout
     .map(([symbol, row, col]) => `<button class="el-btn" style="grid-row:${row};grid-column:${col};" data-el="${symbol}" type="button">${symbol}</button>`)
@@ -252,7 +349,9 @@ function resetBoard() {
   middleEquationNode.textContent = "Enter equation and click Load Equation.";
   middleStatusNode.textContent = "Status: Waiting";
   middleStatusNode.className = "balance-state";
+  middleVisualNode.innerHTML = "";
   middleAtomTableNode.innerHTML = "";
+  middleLegendNode.innerHTML = "";
   selectedElementNode.textContent = "Selected element: none";
 }
 
