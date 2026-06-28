@@ -77,7 +77,7 @@ body {
 
 .workspace-layout {
   display: grid;
-  grid-template-columns: minmax(300px, 0.68fr) minmax(820px, 1.62fr);
+  grid-template-columns: minmax(360px, 0.92fr) minmax(680px, 1.08fr);
   gap: 18px;
   align-items: stretch;
 }
@@ -85,6 +85,7 @@ body {
 .right-stack {
   display: grid;
   gap: 18px;
+  min-width: 0;
 }
 
 .hero {
@@ -160,7 +161,8 @@ h1 {
 .input-panel {
   animation-delay: 0.08s;
   align-self: stretch;
-  max-width: 420px;
+  max-width: none;
+  width: 100%;
   min-height: 100%;
   display: flex;
   flex-direction: column;
@@ -439,7 +441,7 @@ input[type="text"]:focus {
 .balance-board {
   margin-top: 14px;
   display: grid;
-  grid-template-columns: minmax(280px, 360px) minmax(520px, 1fr) minmax(280px, 360px);
+  grid-template-columns: minmax(220px, 0.82fr) minmax(0, 1.36fr) minmax(220px, 0.82fr);
   gap: 12px;
 }
 
@@ -449,6 +451,7 @@ input[type="text"]:focus {
   border-radius: 12px;
   background: #f7fbfd;
   padding: 10px;
+  min-width: 0;
 }
 
 .board-side h3,
@@ -541,7 +544,7 @@ input[type="text"]:focus {
 
 .visual-block {
   display: grid;
-  grid-template-columns: 1fr auto 1fr;
+  grid-template-columns: minmax(0, 1fr) auto minmax(0, 1fr);
   align-items: center;
   gap: 14px;
 }
@@ -550,6 +553,7 @@ input[type="text"]:focus {
   display: grid;
   gap: 10px;
   align-content: start;
+  min-width: 0;
 }
 
 .visual-side-label {
@@ -572,6 +576,8 @@ input[type="text"]:focus {
   align-items: center;
   justify-content: flex-start;
   gap: 6px;
+  min-width: 0;
+  width: 100%;
 }
 
 .molecule-card {
@@ -583,6 +589,8 @@ input[type="text"]:focus {
   border: 1px solid rgba(111, 164, 198, 0.42);
   background: linear-gradient(180deg, rgba(14, 56, 88, 0.92), rgba(8, 34, 56, 0.96));
   box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.05);
+  min-width: 0;
+  width: 100%;
 }
 
 .molecule-topline {
@@ -613,8 +621,9 @@ input[type="text"]:focus {
   align-items: center;
   justify-content: flex-start;
   gap: 2px;
-  overflow-x: auto;
+  overflow: hidden;
   padding-bottom: 2px;
+  flex-wrap: wrap;
 }
 
 .molecule-tree {
@@ -623,6 +632,8 @@ input[type="text"]:focus {
   align-items: center;
   gap: 6px;
   padding: 3px 1px;
+  min-width: 0;
+  flex-wrap: wrap;
 }
 
 .tree-core {
@@ -634,13 +645,15 @@ input[type="text"]:focus {
   display: inline-flex;
   align-items: center;
   gap: 8px;
-  flex-wrap: nowrap;
+  flex-wrap: wrap;
+  min-width: 0;
 }
 
 .branch-node {
   display: inline-flex;
   align-items: center;
   gap: 3px;
+  min-width: 0;
 }
 
 .branch-line {
@@ -653,15 +666,16 @@ input[type="text"]:focus {
 .structure-root {
   display: flex;
   align-items: center;
-  flex-wrap: nowrap;
+  flex-wrap: wrap;
   gap: 3px;
-  min-width: 100%;
+  min-width: 0;
 }
 
 .structure-unit {
   display: inline-flex;
   align-items: center;
   gap: 3px;
+  min-width: 0;
 }
 
 .structure-bond {
@@ -677,12 +691,16 @@ input[type="text"]:focus {
   border-radius: 9px;
   border: 1px solid rgba(136, 180, 212, 0.24);
   background: rgba(14, 49, 77, 0.48);
+  min-width: 0;
+  flex-wrap: wrap;
 }
 
 .group-tree {
   display: inline-flex;
   align-items: center;
   gap: 6px;
+  min-width: 0;
+  flex-wrap: wrap;
 }
 
 .group-core {
@@ -694,6 +712,8 @@ input[type="text"]:focus {
   display: inline-flex;
   align-items: center;
   gap: 6px;
+  flex-wrap: wrap;
+  min-width: 0;
 }
 
 .group-paren {
