@@ -11,6 +11,8 @@ const middleVisualNode = document.getElementById("middle-visual");
 const middleAtomTableNode = document.getElementById("middle-atom-table");
 const middleLegendNode = document.getElementById("middle-legend");
 const leftAddButton = document.getElementById("left-add-btn");
+const balanceBoardNode = document.getElementById("balance-board");
+const expandCenterButton = document.getElementById("expand-center-btn");
 const leftClearButton = document.getElementById("left-clear-btn");
 const rightAddButton = document.getElementById("right-add-btn");
 const rightClearButton = document.getElementById("right-clear-btn");
@@ -41,10 +43,17 @@ const state = {
   solved: null,
   coefficients: [],
   selectedElement: null,
+  centerExpanded: false,
 };
 
 buildPeriodicGrid();
 resetBoard();
+syncCenterExpansion();
+
+expandCenterButton.addEventListener("click", () => {
+  state.centerExpanded = !state.centerExpanded;
+  syncCenterExpansion();
+});
 
 presetButtons.forEach((button) => {
   button.addEventListener("click", () => {
@@ -307,11 +316,11 @@ function renderAtomTable(elements, totals, selectedElement) {
 
 function renderMoleculeVisual(analysis, coefficients) {
   const leftVisual = analysis.left
-    .map((compound, index) => renderVisualMolecule(compound, coefficients[index], "Reactant"))
+    .map((compound, index) => renderVisualMolecule(compound, coefficients[index], "Reactant", index))
     .join("");
 
   const rightVisual = analysis.right
-    .map((compound, index) => renderVisualMolecule(compound, coefficients[analysis.leftCount + index], "Product"))
+    .map((compound, index) => renderVisualMolecule(compound, coefficients[analysis.leftCount + index], "Product", index + analysis.leftCount))
     .join("");
 
   return `
@@ -329,24 +338,51 @@ function renderMoleculeVisual(analysis, coefficients) {
   `;
 }
 
-function renderVisualMolecule(compound, coefficient, sideLabel) {
+function renderVisualMolecule(compound, coefficient, sideLabel, motionSeed = 0) {
   const atoms = expandCompoundAtoms(compound);
   const countLabel = coefficient > 1 ? `×${coefficient}` : "1";
-  const moleculeLabel = renderCompoundStructure(compound);
+  const moleculeLabel = renderScaledMoleculeStructure(compound, coefficient);
+  const totalAtoms = atoms.length * Math.max(1, coefficient);
 
   return `
-    <div class="visual-row">
+    <div class="visual-row" style="--mol-seed:${motionSeed};">
       <div class="visual-label">${sideLabel}</div>
       <div class="visual-molecule molecule-card">
         <div class="molecule-topline">
-          <span class="molecule-formula">${renderTerm(coefficient, compound)}</span>
+          <span class="molecule-formula">${renderFormulaMarkup(coefficient, compound)}</span>
           <span class="molecule-count">${countLabel}</span>
         </div>
         <div class="molecule-structure">${moleculeLabel}</div>
-        <div class="molecule-foot">${atoms.length} atom${atoms.length === 1 ? "" : "s"}</div>
+        <div class="molecule-foot">${totalAtoms} atom${totalAtoms === 1 ? "" : "s"}</div>
       </div>
     </div>
   `;
+}
+
+function renderScaledMoleculeStructure(compound, coefficient) {
+  const safeCoefficient = Math.max(1, Number(coefficient) || 1);
+  const previewCopies = Math.min(safeCoefficient, 4);
+  const extraCopies = Math.max(0, safeCoefficient - previewCopies);
+
+  const copiesMarkup = Array.from({ length: previewCopies }, (_, index) => {
+    const separator = index < previewCopies - 1 ? '<span class="copy-separator">+</span>' : "";
+    return `<span class="molecule-copy" style="--copy-index:${index};">${renderCompoundStructure(compound)}</span>${separator}`;
+  }).join("");
+
+  const extraMarkup = extraCopies > 0
+    ? `<span class="copy-extra">+${extraCopies} more</span>`
+    : "";
+
+  return `<span class="molecule-stack">${copiesMarkup}${extraMarkup}</span>`;
+}
+
+function renderFormulaMarkup(coef, compound) {
+  const coefMarkup = coef === 1 ? "" : `<span class="chem-coef">${coef}</span>`;
+  return `${coefMarkup}${formatCompoundMarkup(compound)}`;
+}
+
+function formatCompoundMarkup(compound) {
+  return compound.replace(/(\d+)/g, '<sub class="chem-sub">$1</sub>');
 }
 
 function renderCompoundStructure(compound) {
@@ -578,6 +614,16 @@ function resetBoard() {
   middleAtomTableNode.innerHTML = "";
   middleLegendNode.innerHTML = "";
   selectedElementNode.textContent = "Selected element: none";
+}
+
+function syncCenterExpansion() {
+  if (!balanceBoardNode || !expandCenterButton) {
+    return;
+  }
+
+  balanceBoardNode.classList.toggle("focus-center", state.centerExpanded);
+  expandCenterButton.textContent = state.centerExpanded ? "Collapse View" : "Expand View";
+  expandCenterButton.setAttribute("aria-pressed", String(state.centerExpanded));
 }
 
 function showError(message) {

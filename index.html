@@ -64,7 +64,7 @@
           <p id="status" class="status">Load an equation, then click coefficients to balance.</p>
           <div id="result" class="result" role="status"></div>
           <div id="details" class="details"></div>
-          <div class="balance-board" aria-label="Element balance board">
+          <div id="balance-board" class="balance-board" aria-label="Element balance board">
             <section class="board-side" aria-labelledby="left-elements-title">
               <h3 id="left-elements-title">Before -> (Left)</h3>
               <p class="side-guide">Left Side (Reactants)</p>
@@ -74,8 +74,11 @@
                 <button id="left-clear-btn" class="btn btn-ghost side-action" type="button">Clear</button>
               </div>
             </section>
-            <section class="board-middle" aria-labelledby="middle-title">
-              <h3 id="middle-title">Current Balance Status</h3>
+            <section id="board-middle" class="board-middle" aria-labelledby="middle-title">
+              <div class="middle-head">
+                <h3 id="middle-title">Current Balance Status</h3>
+                <button id="expand-center-btn" class="btn btn-ghost expand-btn" type="button" aria-pressed="false">Expand View</button>
+              </div>
               <p id="middle-equation" class="middle-equation">Enter equation and click Load Equation.</p>
               <p id="middle-status" class="balance-state">Status: Waiting</p>
               <div id="middle-visual" class="middle-visual"></div>
