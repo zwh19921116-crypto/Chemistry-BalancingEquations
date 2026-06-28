@@ -309,17 +309,48 @@ function renderVisualMolecule(compound, coefficient, sideLabel) {
 }
 
 function renderCompoundStructure(compound) {
+  if (compound.replace(/\s+/g, "") === "H2O") {
+    return renderWaterStructure();
+  }
+
   const nodes = parseCompoundStructure(compound);
   const center = pickCenterNode(nodes);
   const branches = nodes.filter((node) => node !== center);
+  const splitIndex = Math.ceil(branches.length / 2);
+  const leftBranches = branches.slice(0, splitIndex);
+  const rightBranches = branches.slice(splitIndex);
 
   return `
     <span class="molecule-tree">
+      <span class="tree-branches tree-left-branches">
+        ${leftBranches.map((node) => renderBranchNode(node)).join("")}
+      </span>
       <span class="tree-core">${renderStructureNode(center)}</span>
       <span class="tree-branches">
-        ${branches.map((node) => renderBranchNode(node)).join("")}
+        ${rightBranches.map((node) => renderBranchNode(node)).join("")}
       </span>
     </span>
+  `;
+}
+
+function renderWaterStructure() {
+  return `
+    <svg class="water-structure" viewBox="0 0 140 96" role="img" aria-label="Water molecule">
+      <line class="water-bond" x1="70" y1="24" x2="28" y2="74"></line>
+      <line class="water-bond" x1="70" y1="24" x2="112" y2="74"></line>
+      <g class="water-atom water-oxygen">
+        <circle cx="70" cy="24" r="13"></circle>
+        <text x="70" y="28">O</text>
+      </g>
+      <g class="water-atom water-hydrogen">
+        <circle cx="28" cy="74" r="11"></circle>
+        <text x="28" y="78">H</text>
+      </g>
+      <g class="water-atom water-hydrogen">
+        <circle cx="112" cy="74" r="11"></circle>
+        <text x="112" y="78">H</text>
+      </g>
+    </svg>
   `;
 }
 
@@ -366,14 +397,20 @@ function renderGroupNode(children, multiplier) {
   const badge = multiplier > 1 ? `<span class="group-multiplier">x${multiplier}</span>` : "";
   const center = pickCenterNode(children);
   const branches = children.filter((node) => node !== center);
+  const splitIndex = Math.ceil(branches.length / 2);
+  const leftBranches = branches.slice(0, splitIndex);
+  const rightBranches = branches.slice(splitIndex);
 
   return `
     <span class="structure-group">
       <span class="group-paren">(</span>
       <span class="group-tree">
+        <span class="group-branches group-left-branches">
+          ${leftBranches.map((node) => renderBranchNode(node)).join("")}
+        </span>
         <span class="group-core">${renderStructureNode(center)}</span>
         <span class="group-branches">
-          ${branches.map((node) => renderBranchNode(node)).join("")}
+          ${rightBranches.map((node) => renderBranchNode(node)).join("")}
         </span>
       </span>
       <span class="group-paren">)</span>

@@ -647,7 +647,7 @@ input[type="text"]:focus {
   align-items: center;
   justify-content: flex-start;
   gap: 4px;
-  overflow: hidden;
+  overflow: visible;
   padding-bottom: 2px;
   flex-wrap: wrap;
 }
@@ -660,6 +660,49 @@ input[type="text"]:focus {
   padding: 4px 0;
   min-width: 0;
   flex-wrap: wrap;
+}
+
+.water-structure {
+  display: block;
+  width: 140px;
+  height: 96px;
+  margin: 0 auto;
+  overflow: visible;
+}
+
+.water-bond {
+  stroke: rgba(191, 219, 254, 0.95);
+  stroke-width: 3;
+  stroke-linecap: round;
+}
+
+.water-atom circle {
+  stroke: rgba(255, 255, 255, 0.14);
+  stroke-width: 1;
+}
+
+.water-oxygen circle {
+  fill: #d24c4c;
+}
+
+.water-hydrogen circle {
+  fill: #edf3f8;
+}
+
+.water-atom text {
+  font-family: "IBM Plex Mono", monospace;
+  font-size: 10px;
+  font-weight: 700;
+  text-anchor: middle;
+  dominant-baseline: middle;
+}
+
+.water-oxygen text {
+  fill: #ffffff;
+}
+
+.water-hydrogen text {
+  fill: #173042;
 }
 
 .tree-core {
@@ -1424,4 +1467,278 @@ h2,
   .input-panel {
     max-width: none;
   }
+}
+
+/* Dark theme override */
+body {
+  background:
+    radial-gradient(circle at 15% 12%, rgba(56, 189, 248, 0.16) 0%, transparent 34%),
+    radial-gradient(circle at 90% 10%, rgba(37, 99, 235, 0.12) 0%, transparent 26%),
+    linear-gradient(180deg, #06111a, #0b1e2e);
+  color: #eaf5ff;
+}
+
+.bg-orb {
+  opacity: 0.22;
+}
+
+.orb-1 {
+  background: #0ea5e9;
+}
+
+.orb-2 {
+  background: #2563eb;
+}
+
+.hero {
+  color: #edf7ff;
+}
+
+.subtitle,
+.hint,
+.status,
+.details,
+.side-guide,
+.complexity-wrap {
+  color: #9fb6c8;
+}
+
+.panel {
+  background: linear-gradient(180deg, rgba(8, 26, 42, 0.9), rgba(7, 21, 33, 0.94));
+  border: 1px solid rgba(125, 183, 238, 0.16);
+  box-shadow: 0 20px 48px rgba(0, 0, 0, 0.3);
+}
+
+.output-panel,
+.periodic-panel {
+  background: linear-gradient(180deg, rgba(8, 26, 42, 0.94), rgba(6, 19, 30, 0.96));
+}
+
+h2,
+.board-side h3,
+.board-middle h3,
+#left-elements-title,
+#right-elements-title {
+  color: #64d2ff;
+}
+
+input[type="text"] {
+  background: rgba(7, 21, 33, 0.74);
+  border: 1px solid rgba(125, 183, 238, 0.18);
+  color: #eef7ff;
+}
+
+input[type="text"]::placeholder {
+  color: #8ba0b2;
+}
+
+.btn-primary,
+#solve-btn {
+  background: linear-gradient(135deg, #0ea5e9, #2563eb);
+  color: #fff;
+}
+
+.btn-secondary {
+  background: linear-gradient(135deg, #f59e0b, #fbbf24);
+  color: #2d1f02;
+}
+
+.btn-ghost {
+  background: rgba(9, 31, 49, 0.78);
+  color: #d7e7f4;
+  border: 1px solid rgba(125, 183, 238, 0.16);
+}
+
+.chip {
+  background: rgba(9, 31, 49, 0.78);
+  border-color: rgba(125, 183, 238, 0.16);
+  color: #d7e7f4;
+}
+
+.chip:hover {
+  background: rgba(14, 42, 66, 0.96);
+}
+
+.result {
+  background: rgba(7, 21, 33, 0.74);
+  border: 1px solid rgba(125, 183, 238, 0.16);
+  color: #eef7ff;
+}
+
+.result.success {
+  background: rgba(10, 52, 35, 0.7);
+  border-color: rgba(74, 222, 128, 0.2);
+}
+
+.result.error {
+  background: rgba(58, 18, 18, 0.72);
+  border-color: rgba(248, 113, 113, 0.22);
+  color: #ffb2b2;
+}
+
+.board-side,
+.board-middle {
+  background: linear-gradient(180deg, rgba(8, 26, 42, 0.94), rgba(7, 21, 33, 0.96));
+  border: 1px solid rgba(125, 183, 238, 0.16);
+  box-shadow: 0 14px 30px rgba(0, 0, 0, 0.22);
+}
+
+.side-plus,
+.side-compound,
+.coef-value,
+.middle-equation {
+  color: #eaf5ff;
+}
+
+.coef-controls {
+  background: rgba(9, 31, 49, 0.82);
+  border-color: rgba(125, 183, 238, 0.16);
+}
+
+.coef-btn {
+  background: rgba(18, 54, 86, 0.92);
+  border-color: rgba(106, 161, 196, 0.34);
+  color: #f1f8ff;
+}
+
+.coef-btn:hover {
+  background: rgba(26, 71, 108, 0.96);
+}
+
+.middle-visual {
+  border: 1px solid rgba(125, 183, 238, 0.16);
+  background:
+    linear-gradient(180deg, rgba(9, 31, 49, 0.88), rgba(7, 21, 33, 0.94)),
+    radial-gradient(circle at top left, rgba(56, 189, 248, 0.08), transparent 40%);
+}
+
+.visual-side-label,
+.visual-label,
+.molecule-foot,
+.dot-more,
+.legend-chip,
+.complexity-wrap,
+.molecule-count,
+.group-paren,
+.atom-ok,
+.atom-bad,
+.atom-head,
+.atom-row,
+.periodic-panel .status {
+  color: #a9bfd0;
+}
+
+.molecule-card,
+.structure-group,
+.legend-chip,
+.atom-table {
+  border-color: rgba(125, 183, 238, 0.16);
+}
+
+.molecule-card,
+.structure-group {
+  background: linear-gradient(180deg, rgba(9, 31, 49, 0.88), rgba(7, 21, 33, 0.94));
+}
+
+.molecule-formula,
+.group-multiplier,
+.atom-symbol,
+.legend-chip,
+.atom-head,
+.atom-row {
+  color: #eef7ff;
+}
+
+.molecule-count,
+.group-multiplier {
+  background: linear-gradient(135deg, #dbeafe, #bfdbfe);
+  color: #123047;
+}
+
+.atom-dot {
+  box-shadow:
+    inset -3px -3px 6px rgba(0, 0, 0, 0.3),
+    inset 2px 2px 4px rgba(255, 255, 255, 0.16),
+    0 2px 6px rgba(0, 0, 0, 0.16);
+}
+
+.atom-bond,
+.branch-line {
+  background: linear-gradient(90deg, rgba(110, 168, 255, 0.22), rgba(191, 219, 254, 0.82));
+}
+
+.atom-table {
+  background: rgba(7, 21, 33, 0.74);
+}
+
+.atom-head {
+  background: rgba(13, 38, 58, 0.92);
+  border-bottom: 1px solid rgba(125, 183, 238, 0.12);
+}
+
+.atom-row {
+  background: rgba(8, 26, 42, 0.84);
+  border-top: 1px solid rgba(125, 183, 238, 0.12);
+}
+
+.atom-row.highlight {
+  background: rgba(16, 47, 72, 0.96);
+}
+
+.balance-state {
+  background: rgba(9, 31, 49, 0.8);
+  color: #d7e7f4;
+}
+
+.balance-state.ok {
+  background: rgba(10, 52, 35, 0.72);
+  color: #8bf0b0;
+}
+
+.balance-state.bad {
+  background: rgba(58, 18, 18, 0.72);
+  color: #ffb2b2;
+}
+
+.periodic-grid .el-btn,
+.el-btn {
+  background: linear-gradient(180deg, rgba(9, 31, 49, 0.9), rgba(7, 21, 33, 0.96));
+  border-color: rgba(125, 183, 238, 0.18);
+  color: #d7e7f4;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.12);
+}
+
+.el-btn.active {
+  background: linear-gradient(135deg, #38bdf8, #2563eb);
+  border-color: #38bdf8;
+  color: #fff;
+}
+
+.complexity-track {
+  background: rgba(125, 183, 238, 0.16);
+}
+
+/* Structure alignment fix */
+.visual-block {
+  justify-items: center;
+}
+
+.visual-col {
+  justify-items: center;
+}
+
+.visual-row {
+  grid-template-columns: 74px minmax(0, 1fr);
+}
+
+.visual-molecule {
+  justify-content: center;
+}
+
+.molecule-structure,
+.molecule-tree,
+.tree-branches,
+.group-tree,
+.group-branches {
+  justify-content: center;
 }
