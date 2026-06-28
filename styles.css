@@ -78,7 +78,7 @@ body {
 
 .workspace-layout {
   display: grid;
-  grid-template-columns: minmax(360px, 0.92fr) minmax(680px, 1.08fr);
+  grid-template-columns: minmax(320px, 340px) minmax(0, 1fr);
   gap: 18px;
   align-items: stretch;
 }
