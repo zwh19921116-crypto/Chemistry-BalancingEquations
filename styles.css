@@ -79,7 +79,7 @@ body {
   display: grid;
   grid-template-columns: minmax(300px, 0.68fr) minmax(820px, 1.62fr);
   gap: 18px;
-  align-items: start;
+  align-items: stretch;
 }
 
 .right-stack {
@@ -159,8 +159,23 @@ h1 {
 
 .input-panel {
   animation-delay: 0.08s;
-  align-self: start;
+  align-self: stretch;
   max-width: 420px;
+  min-height: 100%;
+  display: flex;
+  flex-direction: column;
+}
+
+.input-panel h2 {
+  margin-bottom: 12px;
+  padding-bottom: 10px;
+  border-bottom: 1px solid rgba(136, 180, 212, 0.28);
+  letter-spacing: 0.01em;
+}
+
+.input-panel form {
+  display: grid;
+  gap: 10px;
 }
 
 .output-panel {
@@ -175,7 +190,8 @@ h2 {
 }
 
 .input-row {
-  display: flex;
+  display: grid;
+  grid-template-columns: minmax(0, 1fr);
   gap: 10px;
 }
 
@@ -195,10 +211,11 @@ input[type="text"] {
   flex: 1;
   border: 2px solid #cee3e6;
   border-radius: 12px;
-  padding: 13px 14px;
+  padding: 14px 15px;
   font-family: "IBM Plex Mono", monospace;
   font-size: 0.95rem;
   transition: border-color 0.2s ease, box-shadow 0.2s ease;
+  min-height: 52px;
 }
 
 input[type="text"]:focus {
@@ -214,6 +231,21 @@ input[type="text"]:focus {
   font-weight: 700;
   font-size: 0.95rem;
   cursor: pointer;
+  min-height: 44px;
+}
+
+.input-row .btn {
+  width: 100%;
+}
+
+.preset-wrap {
+  margin-top: auto;
+  padding-top: 16px;
+  border-top: 1px solid rgba(136, 180, 212, 0.2);
+}
+
+.input-panel .hint {
+  margin-top: 2px;
 }
 
 .btn-primary {
