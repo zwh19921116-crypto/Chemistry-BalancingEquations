@@ -20,23 +20,10 @@ const solveButton = document.getElementById("solve-btn");
 const surpriseButton = document.getElementById("surprise-btn");
 const clearButton = document.getElementById("clear-btn");
 const complexityFill = document.getElementById("complexity-fill");
-const periodicGridNode = document.getElementById("periodic-grid");
-const selectedElementNode = document.getElementById("selected-element");
 
 const presetButtons = document.querySelectorAll(".chip");
 const presetEquations = [...presetButtons].map((button) => button.dataset.equation).filter(Boolean);
 
-const periodicLayout = [
-  ["H", 1, 1], ["He", 1, 18],
-  ["Li", 2, 1], ["Be", 2, 2], ["B", 2, 13], ["C", 2, 14], ["N", 2, 15], ["O", 2, 16], ["F", 2, 17], ["Ne", 2, 18],
-  ["Na", 3, 1], ["Mg", 3, 2], ["Al", 3, 13], ["Si", 3, 14], ["P", 3, 15], ["S", 3, 16], ["Cl", 3, 17], ["Ar", 3, 18],
-  ["K", 4, 1], ["Ca", 4, 2], ["Sc", 4, 3], ["Ti", 4, 4], ["V", 4, 5], ["Cr", 4, 6], ["Mn", 4, 7], ["Fe", 4, 8], ["Co", 4, 9], ["Ni", 4, 10], ["Cu", 4, 11], ["Zn", 4, 12], ["Ga", 4, 13], ["Ge", 4, 14], ["As", 4, 15], ["Se", 4, 16], ["Br", 4, 17], ["Kr", 4, 18],
-  ["Rb", 5, 1], ["Sr", 5, 2], ["Y", 5, 3], ["Zr", 5, 4], ["Nb", 5, 5], ["Mo", 5, 6], ["Tc", 5, 7], ["Ru", 5, 8], ["Rh", 5, 9], ["Pd", 5, 10], ["Ag", 5, 11], ["Cd", 5, 12], ["In", 5, 13], ["Sn", 5, 14], ["Sb", 5, 15], ["Te", 5, 16], ["I", 5, 17], ["Xe", 5, 18],
-  ["Cs", 6, 1], ["Ba", 6, 2], ["La", 6, 3], ["Hf", 6, 4], ["Ta", 6, 5], ["W", 6, 6], ["Re", 6, 7], ["Os", 6, 8], ["Ir", 6, 9], ["Pt", 6, 10], ["Au", 6, 11], ["Hg", 6, 12], ["Tl", 6, 13], ["Pb", 6, 14], ["Bi", 6, 15], ["Po", 6, 16], ["At", 6, 17], ["Rn", 6, 18],
-  ["Fr", 7, 1], ["Ra", 7, 2], ["Ac", 7, 3], ["Rf", 7, 4], ["Db", 7, 5], ["Sg", 7, 6], ["Bh", 7, 7], ["Hs", 7, 8], ["Mt", 7, 9], ["Ds", 7, 10], ["Rg", 7, 11], ["Cn", 7, 12], ["Nh", 7, 13], ["Fl", 7, 14], ["Mc", 7, 15], ["Lv", 7, 16], ["Ts", 7, 17], ["Og", 7, 18],
-  ["Ce", 8, 4], ["Pr", 8, 5], ["Nd", 8, 6], ["Pm", 8, 7], ["Sm", 8, 8], ["Eu", 8, 9], ["Gd", 8, 10], ["Tb", 8, 11], ["Dy", 8, 12], ["Ho", 8, 13], ["Er", 8, 14], ["Tm", 8, 15], ["Yb", 8, 16], ["Lu", 8, 17],
-  ["Th", 9, 4], ["Pa", 9, 5], ["U", 9, 6], ["Np", 9, 7], ["Pu", 9, 8], ["Am", 9, 9], ["Cm", 9, 10], ["Bk", 9, 11], ["Cf", 9, 12], ["Es", 9, 13], ["Fm", 9, 14], ["Md", 9, 15], ["No", 9, 16], ["Lr", 9, 17],
-];
 
 const state = {
   analysis: null,
@@ -46,7 +33,6 @@ const state = {
   centerExpanded: false,
 };
 
-buildPeriodicGrid();
 resetBoard();
 syncCenterExpansion();
 
@@ -103,7 +89,6 @@ clearButton.addEventListener("click", () => {
   leftEquationNode.innerHTML = "";
   rightEquationNode.innerHTML = "";
   resetBoard();
-  renderPeriodicAvailability();
 });
 
 leftAddButton.addEventListener("click", () => {
@@ -164,7 +149,6 @@ function loadEquation() {
     updateComplexity(state.solved);
 
     renderSideControls();
-    renderPeriodicAvailability();
     renderBoard();
   } catch (error) {
     showError(error.message);
@@ -258,11 +242,10 @@ function renderBoard() {
     const delta = (totals.left.get(state.selectedElement) || 0) - (totals.right.get(state.selectedElement) || 0);
     detailsNode.textContent = `${state.selectedElement} difference (before - after): ${delta}`;
   } else {
-    detailsNode.textContent = "Select an element for directional help.";
+    detailsNode.textContent = "Load an equation to see element-by-element balancing guidance.";
   }
 
   pulseLiveNodes();
-  renderPeriodicAvailability();
 }
 
 function pulseLiveNodes() {
@@ -576,32 +559,6 @@ function elementTone(symbol) {
   return "tone-white";
 }
 
-function buildPeriodicGrid() {
-  periodicGridNode.innerHTML = periodicLayout
-    .map(([symbol, row, col]) => `<button class="el-btn" style="grid-row:${row};grid-column:${col};" data-el="${symbol}" type="button">${symbol}</button>`)
-    .join("");
-
-  periodicGridNode.querySelectorAll(".el-btn").forEach((button) => {
-    button.addEventListener("click", () => {
-      state.selectedElement = button.dataset.el;
-      renderPeriodicAvailability();
-      renderBoard();
-    });
-  });
-}
-
-function renderPeriodicAvailability() {
-  const activeElements = state.analysis ? new Set(state.analysis.elements) : new Set();
-
-  periodicGridNode.querySelectorAll(".el-btn").forEach((button) => {
-    const symbol = button.dataset.el;
-    button.classList.toggle("active", state.selectedElement === symbol);
-    button.classList.toggle("dim", state.analysis ? !activeElements.has(symbol) : false);
-  });
-
-  selectedElementNode.textContent = `Selected element: ${state.selectedElement || "none"}`;
-}
-
 function resetBoard() {
   leftEquationNode.innerHTML = "";
   rightEquationNode.innerHTML = "";
@@ -611,7 +568,6 @@ function resetBoard() {
   middleVisualNode.innerHTML = "";
   middleAtomTableNode.innerHTML = "";
   middleLegendNode.innerHTML = "";
-  selectedElementNode.textContent = "Selected element: none";
 }
 
 function syncCenterExpansion() {
