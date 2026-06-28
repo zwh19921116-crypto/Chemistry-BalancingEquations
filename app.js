@@ -6,7 +6,6 @@ const detailsNode = document.getElementById("details");
 const leftEquationNode = document.getElementById("left-equation-controls");
 const rightEquationNode = document.getElementById("right-equation-controls");
 const middleEquationNode = document.getElementById("middle-equation");
-const middleStatusNode = document.getElementById("middle-status");
 const middleVisualNode = document.getElementById("middle-visual");
 const middleAtomTableNode = document.getElementById("middle-atom-table");
 const middleLegendNode = document.getElementById("middle-legend");
@@ -92,11 +91,11 @@ clearButton.addEventListener("click", () => {
 });
 
 leftAddButton.addEventListener("click", () => {
-  detailsNode.textContent = "Use the equation input to add new molecules, then click Load Equation.";
+  detailsNode.textContent = "The + Add Molecule button is only a placeholder right now. Use the equation input above to add compounds, then click Load Equation.";
 });
 
 rightAddButton.addEventListener("click", () => {
-  detailsNode.textContent = "Use the equation input to add new molecules, then click Load Equation.";
+  detailsNode.textContent = "The + Add Molecule button is only a placeholder right now. Use the equation input above to add compounds, then click Load Equation.";
 });
 
 leftClearButton.addEventListener("click", () => {
@@ -222,8 +221,6 @@ function renderBoard() {
   middleEquationNode.textContent = `${formatEquationWithCoefficients(state.analysis.left, state.coefficients.slice(0, state.analysis.leftCount))} -> ${formatEquationWithCoefficients(state.analysis.right, state.coefficients.slice(state.analysis.leftCount))}`;
 
   const balanced = state.analysis.elements.every((element) => totals.left.get(element) === totals.right.get(element));
-  middleStatusNode.textContent = `Status: ${balanced ? "Balanced" : "Unbalanced"}`;
-  middleStatusNode.className = `balance-state ${balanced ? "ok" : "bad"}`;
   middleVisualNode.innerHTML = renderMoleculeVisual(state.analysis, state.coefficients);
   middleAtomTableNode.innerHTML = renderAtomTable(state.analysis.elements, totals, state.selectedElement);
   middleLegendNode.innerHTML = renderMiddleLegend(state.analysis.elements);
@@ -563,8 +560,6 @@ function resetBoard() {
   leftEquationNode.innerHTML = "";
   rightEquationNode.innerHTML = "";
   middleEquationNode.textContent = "Enter equation and click Load Equation.";
-  middleStatusNode.textContent = "Status: Waiting";
-  middleStatusNode.className = "balance-state";
   middleVisualNode.innerHTML = "";
   middleAtomTableNode.innerHTML = "";
   middleLegendNode.innerHTML = "";
