@@ -361,19 +361,27 @@ function renderVisualMolecule(compound, coefficient, sideLabel, motionSeed = 0) 
 
 function renderScaledMoleculeStructure(compound, coefficient) {
   const safeCoefficient = Math.max(1, Number(coefficient) || 1);
-  const previewCopies = Math.min(safeCoefficient, 4);
-  const extraCopies = Math.max(0, safeCoefficient - previewCopies);
+  const atomsInSingleMolecule = expandCompoundAtoms(compound).length;
+  const useChipMode = safeCoefficient > 10 || (atomsInSingleMolecule >= 7 && safeCoefficient > 6);
 
-  const copiesMarkup = Array.from({ length: previewCopies }, (_, index) => {
-    const separator = index < previewCopies - 1 ? '<span class="copy-separator">+</span>' : "";
+  if (useChipMode) {
+    const chipsMarkup = Array.from({ length: safeCoefficient }, (_, index) => (
+      `<span class="molecule-chip" style="--copy-index:${index};">${formatCompoundMarkup(compound)}</span>`
+    )).join("");
+
+    return `<span class="molecule-stack dense chip-mode">${chipsMarkup}</span>`;
+  }
+
+  const copiesMarkup = Array.from({ length: safeCoefficient }, (_, index) => {
+    const separator = index < safeCoefficient - 1 ? '<span class="copy-separator">+</span>' : "";
     return `<span class="molecule-copy" style="--copy-index:${index};">${renderCompoundStructure(compound)}</span>${separator}`;
   }).join("");
 
-  const extraMarkup = extraCopies > 0
-    ? `<span class="copy-extra">+${extraCopies} more</span>`
-    : "";
+  const densityClass = safeCoefficient >= 16 || atomsInSingleMolecule >= 8
+    ? "ultra-dense"
+    : (safeCoefficient >= 7 || atomsInSingleMolecule >= 7 ? "dense" : "");
 
-  return `<span class="molecule-stack">${copiesMarkup}${extraMarkup}</span>`;
+  return `<span class="molecule-stack ${densityClass}">${copiesMarkup}</span>`;
 }
 
 function renderFormulaMarkup(coef, compound) {

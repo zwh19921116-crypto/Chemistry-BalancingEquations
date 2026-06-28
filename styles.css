@@ -1787,20 +1787,47 @@ input[type="text"]::placeholder {
 
 .molecule-structure {
   padding: 6px 4px 2px;
+  overflow-x: hidden;
+  overflow-y: auto;
+  max-height: 118px;
 }
 
 .molecule-stack {
   display: inline-flex;
-  align-items: center;
+  align-items: flex-start;
   flex-wrap: wrap;
   gap: 6px;
+  max-width: 100%;
   transition: opacity 180ms ease, transform 220ms ease;
+}
+
+.molecule-stack.chip-mode {
+  display: flex;
+  width: 100%;
+  gap: 4px;
+  align-content: flex-start;
+}
+
+.molecule-chip {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  min-height: 20px;
+  padding: 2px 7px;
+  border-radius: 999px;
+  background: rgba(16, 47, 71, 0.62);
+  border: 1px solid rgba(130, 194, 238, 0.34);
+  color: #dff4ff;
+  font-family: "IBM Plex Mono", monospace;
+  font-size: 0.66rem;
+  line-height: 1;
 }
 
 .molecule-copy {
   display: inline-flex;
   align-items: center;
   padding: 2px 4px;
+  max-width: 100%;
   border-radius: 10px;
   background: rgba(7, 32, 52, 0.36);
   border: 1px solid rgba(120, 176, 224, 0.22);
@@ -1877,6 +1904,40 @@ input[type="text"]::placeholder {
   line-height: 10px;
   text-align: center;
   font-weight: 700;
+}
+
+.molecule-stack.dense {
+  gap: 4px;
+}
+
+.molecule-stack.dense .molecule-copy {
+  padding: 1px 3px;
+}
+
+.molecule-stack.dense .atom-dot {
+  width: 18px;
+  height: 18px;
+}
+
+.molecule-stack.dense .atom-symbol {
+  font-size: 0.5rem;
+}
+
+.molecule-stack.dense .atom-mult {
+  min-width: 10px;
+  height: 10px;
+  line-height: 8px;
+  font-size: 0.44rem;
+  right: -3px;
+  bottom: -4px;
+}
+
+.molecule-stack.dense .structure-bond {
+  width: 14px;
+}
+
+.molecule-stack.dense .structure-bond::before {
+  top: 3px;
 }
 
 .middle-visual .visual-row {
