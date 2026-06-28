@@ -27,82 +27,86 @@
       </div>
     </header>
 
-    <section class="panel input-panel" aria-labelledby="input-heading">
-      <h2 id="input-heading">Enter Equation</h2>
-      <form id="balance-form" novalidate>
-        <label for="equation-input" class="sr-only">Chemical equation</label>
-        <div class="input-row">
-          <input
-            id="equation-input"
-            name="equation"
-            type="text"
-            autocomplete="off"
-            spellcheck="false"
-            placeholder="Example: Fe + O2 -> Fe2O3"
-            required
-          />
-          <button type="submit" class="btn btn-primary">Load Equation</button>
-          <button type="button" id="solve-btn" class="btn btn-secondary">Auto Balance</button>
-          <button type="button" id="surprise-btn" class="btn btn-secondary">Surprise</button>
-          <button type="button" id="clear-btn" class="btn btn-ghost">Clear</button>
+    <div class="workspace-layout">
+      <section class="panel input-panel" aria-labelledby="input-heading">
+        <h2 id="input-heading">Enter Equation</h2>
+        <form id="balance-form" novalidate>
+          <label for="equation-input" class="sr-only">Chemical equation</label>
+          <div class="input-row">
+            <input
+              id="equation-input"
+              name="equation"
+              type="text"
+              autocomplete="off"
+              spellcheck="false"
+              placeholder="Example: Fe + O2 -> Fe2O3"
+              required
+            />
+            <button type="submit" class="btn btn-primary">Load Equation</button>
+            <button type="button" id="solve-btn" class="btn btn-secondary">Auto Balance</button>
+            <button type="button" id="surprise-btn" class="btn btn-secondary">Surprise</button>
+            <button type="button" id="clear-btn" class="btn btn-ghost">Clear</button>
+          </div>
+          <p class="hint">Use <code>+</code> between compounds and <code>-></code> between left and right sides.</p>
+        </form>
+
+        <div class="preset-wrap" aria-label="Preset equations">
+          <button class="chip" data-equation="H2 + O2 -> H2O">Water Formation</button>
+          <button class="chip" data-equation="C3H8 + O2 -> CO2 + H2O">Propane Combustion</button>
+          <button class="chip" data-equation="KClO3 -> KCl + O2">Decomposition</button>
+          <button class="chip" data-equation="Na3PO4 + MgCl2 -> NaCl + Mg3(PO4)2">Double Displacement</button>
         </div>
-        <p class="hint">Use <code>+</code> between compounds and <code>-></code> between left and right sides.</p>
-      </form>
+      </section>
 
-      <div class="preset-wrap" aria-label="Preset equations">
-        <button class="chip" data-equation="H2 + O2 -> H2O">Water Formation</button>
-        <button class="chip" data-equation="C3H8 + O2 -> CO2 + H2O">Propane Combustion</button>
-        <button class="chip" data-equation="KClO3 -> KCl + O2">Decomposition</button>
-        <button class="chip" data-equation="Na3PO4 + MgCl2 -> NaCl + Mg3(PO4)2">Double Displacement</button>
-      </div>
-    </section>
-
-    <section class="panel output-panel" aria-live="polite" aria-atomic="true">
-      <h2>Result</h2>
-      <p id="status" class="status">Load an equation, then click coefficients to balance.</p>
-      <div id="result" class="result" role="status"></div>
-      <div id="details" class="details"></div>
-      <div class="balance-board" aria-label="Element balance board">
-        <section class="board-side" aria-labelledby="left-elements-title">
-          <h3 id="left-elements-title">Before -> (Left)</h3>
-          <p class="side-guide">Left Side (Reactants)</p>
-          <div id="left-equation-controls" class="side-controls"></div>
-          <div class="side-actions">
-            <button id="left-add-btn" class="btn btn-ghost side-action" type="button">+ Add Molecule</button>
-            <button id="left-clear-btn" class="btn btn-ghost side-action" type="button">Clear</button>
+      <div class="right-stack">
+        <section class="panel output-panel" aria-live="polite" aria-atomic="true">
+          <h2>Result</h2>
+          <p id="status" class="status">Load an equation, then click coefficients to balance.</p>
+          <div id="result" class="result" role="status"></div>
+          <div id="details" class="details"></div>
+          <div class="balance-board" aria-label="Element balance board">
+            <section class="board-side" aria-labelledby="left-elements-title">
+              <h3 id="left-elements-title">Before -> (Left)</h3>
+              <p class="side-guide">Left Side (Reactants)</p>
+              <div id="left-equation-controls" class="side-controls"></div>
+              <div class="side-actions">
+                <button id="left-add-btn" class="btn btn-ghost side-action" type="button">+ Add Molecule</button>
+                <button id="left-clear-btn" class="btn btn-ghost side-action" type="button">Clear</button>
+              </div>
+            </section>
+            <section class="board-middle" aria-labelledby="middle-title">
+              <h3 id="middle-title">Current Balance Status</h3>
+              <p id="middle-equation" class="middle-equation">Enter equation and click Load Equation.</p>
+              <p id="middle-status" class="balance-state">Status: Waiting</p>
+              <div id="middle-visual" class="middle-visual"></div>
+              <div id="middle-atom-table" class="atom-table"></div>
+              <div id="middle-legend" class="middle-legend"></div>
+            </section>
+            <section class="board-side" aria-labelledby="right-elements-title">
+              <h3 id="right-elements-title">After -> (Right)</h3>
+              <p class="side-guide">Right Side (Products)</p>
+              <div id="right-equation-controls" class="side-controls"></div>
+              <div class="side-actions">
+                <button id="right-add-btn" class="btn btn-ghost side-action" type="button">+ Add Molecule</button>
+                <button id="right-clear-btn" class="btn btn-ghost side-action" type="button">Clear</button>
+              </div>
+            </section>
+          </div>
+          <div class="complexity-wrap" aria-label="Reaction complexity">
+            <span>Reaction Complexity</span>
+            <div class="complexity-track"><div id="complexity-fill" class="complexity-fill"></div></div>
           </div>
         </section>
-        <section class="board-middle" aria-labelledby="middle-title">
-          <h3 id="middle-title">Current Balance Status</h3>
-          <p id="middle-equation" class="middle-equation">Enter equation and click Load Equation.</p>
-          <p id="middle-status" class="balance-state">Status: Waiting</p>
-          <div id="middle-visual" class="middle-visual"></div>
-          <div id="middle-atom-table" class="atom-table"></div>
-          <div id="middle-legend" class="middle-legend"></div>
-        </section>
-        <section class="board-side" aria-labelledby="right-elements-title">
-          <h3 id="right-elements-title">After -> (Right)</h3>
-          <p class="side-guide">Right Side (Products)</p>
-          <div id="right-equation-controls" class="side-controls"></div>
-          <div class="side-actions">
-            <button id="right-add-btn" class="btn btn-ghost side-action" type="button">+ Add Molecule</button>
-            <button id="right-clear-btn" class="btn btn-ghost side-action" type="button">Clear</button>
+
+        <section class="panel periodic-panel" aria-labelledby="periodic-title">
+          <h2 id="periodic-title">Periodic Table Selector</h2>
+          <p id="selected-element" class="status">Selected element: none</p>
+          <div class="periodic-scroll">
+            <div id="periodic-grid" class="periodic-grid"></div>
           </div>
         </section>
       </div>
-      <div class="complexity-wrap" aria-label="Reaction complexity">
-        <span>Reaction Complexity</span>
-        <div class="complexity-track"><div id="complexity-fill" class="complexity-fill"></div></div>
-      </div>
-    </section>
-
-    <section class="panel periodic-panel" aria-labelledby="periodic-title">
-      <h2 id="periodic-title">Periodic Table Selector</h2>
-      <p id="selected-element" class="status">Selected element: none</p>
-      <div class="periodic-scroll">
-        <div id="periodic-grid" class="periodic-grid"></div>
-      </div>
-    </section>
+    </div>
   </main>
 
   <script src="app.js"></script>

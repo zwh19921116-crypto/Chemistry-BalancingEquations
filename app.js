@@ -266,44 +266,237 @@ function renderAtomTable(elements, totals, selectedElement) {
 
 function renderMoleculeVisual(analysis, coefficients) {
   const leftVisual = analysis.left
-    .slice(0, 3)
-    .map((compound, index) => renderVisualMolecule(compound, coefficients[index]))
+    .map((compound, index) => renderVisualMolecule(compound, coefficients[index], "Reactant"))
     .join("");
 
   const rightVisual = analysis.right
-    .slice(0, 3)
-    .map((compound, index) => renderVisualMolecule(compound, coefficients[analysis.leftCount + index]))
+    .map((compound, index) => renderVisualMolecule(compound, coefficients[analysis.leftCount + index], "Product"))
     .join("");
 
   return `
     <div class="visual-block">
-      <div class="visual-col">${leftVisual}</div>
+      <div class="visual-col">
+        <div class="visual-side-label">Before</div>
+        ${leftVisual}
+      </div>
       <div class="visual-arrow">→</div>
-      <div class="visual-col">${rightVisual}</div>
+      <div class="visual-col">
+        <div class="visual-side-label">After</div>
+        ${rightVisual}
+      </div>
     </div>
   `;
 }
 
-function renderVisualMolecule(compound, coefficient) {
-  const first = compound.match(/[A-Z][a-z]?/);
-  const key = first ? first[0] : "X";
-  const tone = elementTone(key);
-  const visibleCount = Math.min(6, Math.max(1, coefficient));
-  const overflow = coefficient > 6 ? `<span class="dot-more">+${coefficient - 6}</span>` : "";
-  const units = Array.from(
-    { length: visibleCount },
-    () => `<span class="mini-molecule"><span class="atom-dot ${tone}"></span><span class="atom-bond mini-bond"></span><span class="atom-dot ${tone}"></span></span>`,
-  ).join("");
+function renderVisualMolecule(compound, coefficient, sideLabel) {
+  const atoms = expandCompoundAtoms(compound);
+  const countLabel = coefficient > 1 ? `×${coefficient}` : "1";
+  const moleculeLabel = renderCompoundStructure(compound);
 
   return `
     <div class="visual-row">
-      <span class="visual-label">${coefficient}${compound}</span>
-      <div class="visual-molecule">
-        <div class="dot-track">${units}</div>
-        ${overflow}
+      <div class="visual-label">${sideLabel}</div>
+      <div class="visual-molecule molecule-card">
+        <div class="molecule-topline">
+          <span class="molecule-formula">${renderTerm(coefficient, compound)}</span>
+          <span class="molecule-count">${countLabel}</span>
+        </div>
+        <div class="molecule-structure">${moleculeLabel}</div>
+        <div class="molecule-foot">${atoms.length} atom${atoms.length === 1 ? "" : "s"}</div>
       </div>
     </div>
   `;
+}
+
+function renderCompoundStructure(compound) {
+  const nodes = parseCompoundStructure(compound);
+  const center = pickCenterNode(nodes);
+  const branches = nodes.filter((node) => node !== center);
+
+  return `
+    <span class="molecule-tree">
+      <span class="tree-core">${renderStructureNode(center)}</span>
+      <span class="tree-branches">
+        ${branches.map((node) => renderBranchNode(node)).join("")}
+      </span>
+    </span>
+  `;
+}
+
+function pickCenterNode(nodes) {
+  const atomNodes = nodes.filter((node) => node.type === "atom");
+  const symbolCounts = new Map();
+
+  atomNodes.forEach((node) => {
+    symbolCounts.set(node.symbol, (symbolCounts.get(node.symbol) || 0) + 1);
+  });
+
+  const preferredAtom = atomNodes.find((node) => symbolCounts.get(node.symbol) === 1 && node.symbol !== "H" && node.symbol !== "O")
+    || atomNodes.find((node) => symbolCounts.get(node.symbol) === 1 && node.symbol !== "H")
+    || atomNodes.find((node) => node.symbol !== "H" && node.symbol !== "O")
+    || atomNodes.find((node) => node.symbol !== "H")
+    || atomNodes[0];
+
+  return preferredAtom || nodes[0];
+}
+
+function renderBranchNode(node) {
+  const body = renderStructureNode(node);
+  return `<span class="branch-node"><span class="branch-line"></span>${body}</span>`;
+}
+
+function renderStructureNode(node) {
+  if (!node) {
+    return "";
+  }
+
+  if (node.type === "atom") {
+    return renderAtomNode(node.symbol);
+  }
+
+  return renderGroupNode(node.children, node.multiplier);
+}
+
+function renderAtomNode(symbol) {
+  const tone = elementTone(symbol);
+  return `<span class="atom-dot ${tone}"><span class="atom-symbol">${symbol}</span></span>`;
+}
+
+function renderGroupNode(children, multiplier) {
+  const badge = multiplier > 1 ? `<span class="group-multiplier">x${multiplier}</span>` : "";
+  const center = pickCenterNode(children);
+  const branches = children.filter((node) => node !== center);
+
+  return `
+    <span class="structure-group">
+      <span class="group-paren">(</span>
+      <span class="group-tree">
+        <span class="group-core">${renderStructureNode(center)}</span>
+        <span class="group-branches">
+          ${branches.map((node) => renderBranchNode(node)).join("")}
+        </span>
+      </span>
+      <span class="group-paren">)</span>
+      ${badge}
+    </span>
+  `;
+}
+
+function parseCompoundStructure(compound) {
+  const tokenRegex = /([A-Z][a-z]?|\(|\)|\d+)/g;
+  const tokens = compound.match(tokenRegex) || [];
+  let index = 0;
+
+  function parseSequence() {
+    const nodes = [];
+
+    while (index < tokens.length) {
+      const token = tokens[index];
+
+      if (token === ")") {
+        break;
+      }
+
+      if (token === "(") {
+        index += 1;
+        const children = parseSequence();
+
+        if (tokens[index] !== ")") {
+          throw new Error(`Missing ')' in ${compound}`);
+        }
+
+        index += 1;
+        const multiplier = readMultiplier();
+        nodes.push({ type: "group", children, multiplier });
+        continue;
+      }
+
+      if (/^[A-Z][a-z]?$/.test(token)) {
+        index += 1;
+        const multiplier = readMultiplier();
+        for (let repeat = 0; repeat < multiplier; repeat += 1) {
+          nodes.push({ type: "atom", symbol: token });
+        }
+        continue;
+      }
+
+      index += 1;
+    }
+
+    return nodes;
+  }
+
+  function readMultiplier() {
+    const token = tokens[index];
+
+    if (token && /^\d+$/.test(token)) {
+      index += 1;
+      return Number(token);
+    }
+
+    return 1;
+  }
+
+  return parseSequence();
+}
+
+
+function expandCompoundAtoms(compound) {
+  const tokenRegex = /([A-Z][a-z]?|\(|\)|\d+)/g;
+  const tokens = compound.match(tokenRegex) || [];
+  let index = 0;
+
+  function parseSequence() {
+    const sequence = [];
+
+    while (index < tokens.length) {
+      const token = tokens[index];
+
+      if (token === ")") {
+        break;
+      }
+
+      if (token === "(") {
+        index += 1;
+        const inner = parseSequence();
+
+        if (tokens[index] !== ")") {
+          break;
+        }
+
+        index += 1;
+        const multiplier = readMultiplier();
+        for (let repeat = 0; repeat < multiplier; repeat += 1) {
+          sequence.push(...inner);
+        }
+        continue;
+      }
+
+      if (/^[A-Z][a-z]?$/.test(token)) {
+        index += 1;
+        const multiplier = readMultiplier();
+        for (let repeat = 0; repeat < multiplier; repeat += 1) {
+          sequence.push(token);
+        }
+        continue;
+      }
+
+      index += 1;
+    }
+
+    return sequence;
+  }
+
+  function readMultiplier() {
+    const token = tokens[index];
+    if (token && /^\d+$/.test(token)) {
+      index += 1;
+      return Number(token);
+    }
+    return 1;
+  }
+
+  return parseSequence();
 }
 
 function renderMiddleLegend(elements) {
