@@ -408,15 +408,16 @@ function renderStructureNode(node) {
   }
 
   if (node.type === "atom") {
-    return renderAtomNode(node.symbol);
+    return renderAtomNode(node.symbol, node.multiplier || 1);
   }
 
   return renderGroupNode(node.children, node.multiplier);
 }
 
-function renderAtomNode(symbol) {
+function renderAtomNode(symbol, multiplier = 1) {
   const tone = elementTone(symbol);
-  return `<span class="atom-dot ${tone}"><span class="atom-symbol">${symbol}</span></span>`;
+  const multiplierMarkup = multiplier > 1 ? `<span class="atom-mult">${multiplier}</span>` : "";
+  return `<span class="atom-dot ${tone}"><span class="atom-symbol">${symbol}</span>${multiplierMarkup}</span>`;
 }
 
 function renderGroupNode(children, multiplier) {
@@ -466,9 +467,7 @@ function parseCompoundStructure(compound) {
       if (/^[A-Z][a-z]?$/.test(token)) {
         index += 1;
         const multiplier = readMultiplier();
-        for (let repeat = 0; repeat < multiplier; repeat += 1) {
-          nodes.push({ type: "atom", symbol: token });
-        }
+        nodes.push({ type: "atom", symbol: token, multiplier });
         continue;
       }
 
@@ -559,6 +558,10 @@ function renderMiddleLegend(elements) {
 }
 
 function elementTone(symbol) {
+  if (symbol === "C") {
+    return "tone-carbon";
+  }
+
   if (symbol === "O") {
     return "tone-red";
   }

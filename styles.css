@@ -905,6 +905,10 @@ input[type="text"]:focus {
   background: radial-gradient(circle at 30% 30%, #ffffff, #aab8c6);
 }
 
+.tone-carbon {
+  background: radial-gradient(circle at 30% 30%, #6f8798, #1a2b38);
+}
+
 .tone-green {
   background: radial-gradient(circle at 30% 30%, #97e17d, #237f2f);
 }
@@ -1856,6 +1860,23 @@ input[type="text"]::placeholder {
 
 .atom-symbol {
   font-size: 0.58rem;
+}
+
+.atom-mult {
+  position: absolute;
+  right: -4px;
+  bottom: -5px;
+  min-width: 12px;
+  height: 12px;
+  border-radius: 999px;
+  background: rgba(255, 255, 255, 0.92);
+  border: 1px solid rgba(105, 139, 166, 0.45);
+  color: #0f2b42;
+  font-family: "IBM Plex Mono", monospace;
+  font-size: 0.5rem;
+  line-height: 10px;
+  text-align: center;
+  font-weight: 700;
 }
 
 .middle-visual .visual-row {
