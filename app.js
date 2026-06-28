@@ -83,6 +83,8 @@ solveButton.addEventListener("click", () => {
   }
 
   state.coefficients = [...state.solved.coefficients];
+  statusNode.textContent = "Auto-balance applied. Continue practicing with +/- controls.";
+  detailsNode.textContent = "Practice mode remains active: adjust each compound by +1/-1 to experiment.";
   renderSideControls();
   renderBoard();
 });
@@ -155,10 +157,10 @@ function loadEquation() {
       state.selectedElement = state.analysis.elements[0] || null;
     }
 
-    statusNode.textContent = "Click +/- on compounds to balance.";
+    statusNode.textContent = "Practice mode: click +/- on compounds to balance manually.";
     resultNode.textContent = "Equation loaded.";
     resultNode.className = "result";
-    detailsNode.textContent = "Click +/- in left and right panels to balance.";
+    detailsNode.textContent = "Manual learning mode is active. Auto Balance is optional if you want a reference answer.";
     updateComplexity(state.solved);
 
     renderSideControls();
@@ -193,28 +195,13 @@ function renderSideControls() {
 }
 
 function updateLinkedCoefficients(index, action) {
-  if (!state.solved || !state.solved.coefficients || state.solved.coefficients.length === 0) {
-    if (action === "inc") {
-      state.coefficients[index] += 1;
-    }
-
-    if (action === "dec") {
-      state.coefficients[index] = Math.max(1, state.coefficients[index] - 1);
-    }
-
-    return;
+  if (action === "inc") {
+    state.coefficients[index] += 1;
   }
 
-  const solvedCoefficients = state.solved.coefficients;
-  const basis = solvedCoefficients[index] || 1;
-  const current = state.coefficients[index] || 1;
-  const currentScale = Math.max(1, Math.round(current / basis));
-
-  const nextScale = action === "inc"
-    ? currentScale + 1
-    : Math.max(1, currentScale - 1);
-
-  state.coefficients = solvedCoefficients.map((coef) => Math.max(1, coef * nextScale));
+  if (action === "dec") {
+    state.coefficients[index] = Math.max(1, state.coefficients[index] - 1);
+  }
 }
 
 function renderSideRows(start, end) {
@@ -734,7 +721,7 @@ function renderTerm(coef, compound) {
 }
 
 function splitEquation(inputEquation) {
-  const normalized = inputEquation.replace(/\s+/g, "");
+  const normalized = sanitizeEquationInput(inputEquation).replace(/\s+/g, "");
   const arrowMatch = normalized.includes("->") ? "->" : null;
 
   if (!arrowMatch) {
@@ -750,6 +737,13 @@ function splitEquation(inputEquation) {
   const right = splitCompounds(rightRaw);
 
   return { left, right };
+}
+
+function sanitizeEquationInput(rawText) {
+  // Remove common invisible Unicode format characters that appear in pasted formulas.
+  return rawText
+    .replace(/[\u200B-\u200D\u2060\uFEFF]/g, "")
+    .replace(/[→⟶⟹⟷⟺]/g, "->");
 }
 
 function splitCompounds(side) {
