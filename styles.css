@@ -447,7 +447,7 @@ input[type="text"]:focus {
 .balance-board {
   margin-top: 14px;
   display: grid;
-  grid-template-columns: minmax(220px, 0.82fr) minmax(0, 1.36fr) minmax(220px, 0.82fr);
+  grid-template-columns: minmax(180px, 0.62fr) minmax(0, 1.76fr) minmax(180px, 0.62fr);
   gap: 12px;
 }
 
@@ -647,9 +647,10 @@ input[type="text"]:focus {
   align-items: center;
   justify-content: flex-start;
   gap: 4px;
-  overflow: visible;
+  overflow-x: auto;
+  overflow-y: hidden;
   padding-bottom: 2px;
-  flex-wrap: wrap;
+  flex-wrap: nowrap;
 }
 
 .molecule-tree {
@@ -660,49 +661,6 @@ input[type="text"]:focus {
   padding: 4px 0;
   min-width: 0;
   flex-wrap: wrap;
-}
-
-.water-structure {
-  display: block;
-  width: 140px;
-  height: 96px;
-  margin: 0 auto;
-  overflow: visible;
-}
-
-.water-bond {
-  stroke: rgba(191, 219, 254, 0.95);
-  stroke-width: 3;
-  stroke-linecap: round;
-}
-
-.water-atom circle {
-  stroke: rgba(255, 255, 255, 0.14);
-  stroke-width: 1;
-}
-
-.water-oxygen circle {
-  fill: #d24c4c;
-}
-
-.water-hydrogen circle {
-  fill: #edf3f8;
-}
-
-.water-atom text {
-  font-family: "IBM Plex Mono", monospace;
-  font-size: 10px;
-  font-weight: 700;
-  text-anchor: middle;
-  dominant-baseline: middle;
-}
-
-.water-oxygen text {
-  fill: #ffffff;
-}
-
-.water-hydrogen text {
-  fill: #173042;
 }
 
 .tree-core {
@@ -735,7 +693,7 @@ input[type="text"]:focus {
 .structure-root {
   display: flex;
   align-items: center;
-  flex-wrap: wrap;
+  flex-wrap: nowrap;
   gap: 4px;
   min-width: 0;
 }
@@ -748,8 +706,11 @@ input[type="text"]:focus {
 }
 
 .structure-bond {
-  width: 14px;
-  height: 2px;
+  width: 18px;
+  height: 3px;
+  border-radius: 999px;
+  background: linear-gradient(90deg, rgba(168, 208, 255, 0.95), rgba(227, 241, 255, 0.98));
+  box-shadow: 0 0 8px rgba(143, 201, 255, 0.42);
 }
 
 .structure-group {
@@ -761,7 +722,7 @@ input[type="text"]:focus {
   border: 1px solid #dbe6ef;
   background: linear-gradient(180deg, #ffffff, #f9fbfd);
   min-width: 0;
-  flex-wrap: wrap;
+  flex-wrap: nowrap;
 }
 
 .group-tree {
@@ -769,7 +730,7 @@ input[type="text"]:focus {
   align-items: center;
   gap: 10px;
   min-width: 0;
-  flex-wrap: wrap;
+  flex-wrap: nowrap;
 }
 
 .group-core {
@@ -796,6 +757,7 @@ input[type="text"]:focus {
   display: inline-flex;
   align-items: center;
   gap: 2px;
+  flex-wrap: nowrap;
 }
 
 .group-multiplier {
@@ -1741,4 +1703,33 @@ input[type="text"]::placeholder {
 .group-tree,
 .group-branches {
   justify-content: center;
+}
+
+.side-row,
+.molecule-card,
+.atom-row,
+.balance-state,
+.result {
+  transition: transform 180ms ease, box-shadow 220ms ease, background-color 220ms ease;
+}
+
+.live-update {
+  animation: livePulse 280ms ease;
+}
+
+@keyframes livePulse {
+  0% {
+    transform: translateY(1px) scale(0.995);
+    filter: brightness(1);
+  }
+
+  60% {
+    transform: translateY(0) scale(1.005);
+    filter: brightness(1.08);
+  }
+
+  100% {
+    transform: translateY(0) scale(1);
+    filter: brightness(1);
+  }
 }

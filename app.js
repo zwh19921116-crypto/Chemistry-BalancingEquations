@@ -175,18 +175,37 @@ function renderSideControls() {
       const index = Number(button.dataset.index);
       const action = button.dataset.action;
 
-      if (action === "inc") {
-        state.coefficients[index] += 1;
-      }
-
-      if (action === "dec") {
-        state.coefficients[index] = Math.max(1, state.coefficients[index] - 1);
-      }
+      updateLinkedCoefficients(index, action);
 
       renderSideControls();
       renderBoard();
     });
   });
+}
+
+function updateLinkedCoefficients(index, action) {
+  if (!state.solved || !state.solved.coefficients || state.solved.coefficients.length === 0) {
+    if (action === "inc") {
+      state.coefficients[index] += 1;
+    }
+
+    if (action === "dec") {
+      state.coefficients[index] = Math.max(1, state.coefficients[index] - 1);
+    }
+
+    return;
+  }
+
+  const solvedCoefficients = state.solved.coefficients;
+  const basis = solvedCoefficients[index] || 1;
+  const current = state.coefficients[index] || 1;
+  const currentScale = Math.max(1, Math.round(current / basis));
+
+  const nextScale = action === "inc"
+    ? currentScale + 1
+    : Math.max(1, currentScale - 1);
+
+  state.coefficients = solvedCoefficients.map((coef) => Math.max(1, coef * nextScale));
 }
 
 function renderSideRows(start, end) {
@@ -246,7 +265,29 @@ function renderBoard() {
     detailsNode.textContent = "Select an element for directional help.";
   }
 
+  pulseLiveNodes();
   renderPeriodicAvailability();
+}
+
+function pulseLiveNodes() {
+  const nodes = [
+    leftEquationNode,
+    rightEquationNode,
+    middleEquationNode,
+    middleStatusNode,
+    middleVisualNode,
+    middleAtomTableNode,
+  ];
+
+  nodes.forEach((node) => {
+    if (!node) {
+      return;
+    }
+
+    node.classList.remove("live-update");
+    void node.offsetWidth;
+    node.classList.add("live-update");
+  });
 }
 
 function renderAtomTable(elements, totals, selectedElement) {
@@ -309,71 +350,20 @@ function renderVisualMolecule(compound, coefficient, sideLabel) {
 }
 
 function renderCompoundStructure(compound) {
-  if (compound.replace(/\s+/g, "") === "H2O") {
-    return renderWaterStructure();
-  }
-
   const nodes = parseCompoundStructure(compound);
-  const center = pickCenterNode(nodes);
-  const branches = nodes.filter((node) => node !== center);
-  const splitIndex = Math.ceil(branches.length / 2);
-  const leftBranches = branches.slice(0, splitIndex);
-  const rightBranches = branches.slice(splitIndex);
 
   return `
-    <span class="molecule-tree">
-      <span class="tree-branches tree-left-branches">
-        ${leftBranches.map((node) => renderBranchNode(node)).join("")}
-      </span>
-      <span class="tree-core">${renderStructureNode(center)}</span>
-      <span class="tree-branches">
-        ${rightBranches.map((node) => renderBranchNode(node)).join("")}
-      </span>
+    <span class="structure-root molecule-chain">
+      ${renderNodeSequence(nodes)}
     </span>
   `;
 }
 
-function renderWaterStructure() {
-  return `
-    <svg class="water-structure" viewBox="0 0 140 96" role="img" aria-label="Water molecule">
-      <line class="water-bond" x1="70" y1="24" x2="28" y2="74"></line>
-      <line class="water-bond" x1="70" y1="24" x2="112" y2="74"></line>
-      <g class="water-atom water-oxygen">
-        <circle cx="70" cy="24" r="13"></circle>
-        <text x="70" y="28">O</text>
-      </g>
-      <g class="water-atom water-hydrogen">
-        <circle cx="28" cy="74" r="11"></circle>
-        <text x="28" y="78">H</text>
-      </g>
-      <g class="water-atom water-hydrogen">
-        <circle cx="112" cy="74" r="11"></circle>
-        <text x="112" y="78">H</text>
-      </g>
-    </svg>
-  `;
-}
-
-function pickCenterNode(nodes) {
-  const atomNodes = nodes.filter((node) => node.type === "atom");
-  const symbolCounts = new Map();
-
-  atomNodes.forEach((node) => {
-    symbolCounts.set(node.symbol, (symbolCounts.get(node.symbol) || 0) + 1);
-  });
-
-  const preferredAtom = atomNodes.find((node) => symbolCounts.get(node.symbol) === 1 && node.symbol !== "H" && node.symbol !== "O")
-    || atomNodes.find((node) => symbolCounts.get(node.symbol) === 1 && node.symbol !== "H")
-    || atomNodes.find((node) => node.symbol !== "H" && node.symbol !== "O")
-    || atomNodes.find((node) => node.symbol !== "H")
-    || atomNodes[0];
-
-  return preferredAtom || nodes[0];
-}
-
-function renderBranchNode(node) {
-  const body = renderStructureNode(node);
-  return `<span class="branch-node"><span class="branch-line"></span>${body}</span>`;
+function renderNodeSequence(nodes) {
+  return nodes.map((node, index) => {
+    const bond = index > 0 ? '<span class="structure-bond"></span>' : "";
+    return `${bond}<span class="structure-unit">${renderStructureNode(node)}</span>`;
+  }).join("");
 }
 
 function renderStructureNode(node) {
@@ -395,23 +385,12 @@ function renderAtomNode(symbol) {
 
 function renderGroupNode(children, multiplier) {
   const badge = multiplier > 1 ? `<span class="group-multiplier">x${multiplier}</span>` : "";
-  const center = pickCenterNode(children);
-  const branches = children.filter((node) => node !== center);
-  const splitIndex = Math.ceil(branches.length / 2);
-  const leftBranches = branches.slice(0, splitIndex);
-  const rightBranches = branches.slice(splitIndex);
 
   return `
     <span class="structure-group">
       <span class="group-paren">(</span>
       <span class="group-tree">
-        <span class="group-branches group-left-branches">
-          ${leftBranches.map((node) => renderBranchNode(node)).join("")}
-        </span>
-        <span class="group-core">${renderStructureNode(center)}</span>
-        <span class="group-branches">
-          ${rightBranches.map((node) => renderBranchNode(node)).join("")}
-        </span>
+        <span class="group-inner">${renderNodeSequence(children)}</span>
       </span>
       <span class="group-paren">)</span>
       ${badge}
