@@ -161,7 +161,7 @@ h1 {
 .input-panel {
   animation-delay: 0.08s;
   align-self: stretch;
-  max-width: none;
+  max-width: 340px;
   width: 100%;
   min-height: 100%;
   display: flex;
@@ -169,15 +169,15 @@ h1 {
 }
 
 .input-panel h2 {
-  margin-bottom: 12px;
-  padding-bottom: 10px;
+  margin-bottom: 10px;
+  padding-bottom: 8px;
   border-bottom: 1px solid rgba(136, 180, 212, 0.28);
   letter-spacing: 0.01em;
 }
 
 .input-panel form {
   display: grid;
-  gap: 10px;
+  gap: 8px;
 }
 
 .output-panel {
@@ -194,7 +194,7 @@ h2 {
 .input-row {
   display: grid;
   grid-template-columns: minmax(0, 1fr);
-  gap: 10px;
+  gap: 8px;
 }
 
 .coef-row {
@@ -213,11 +213,11 @@ input[type="text"] {
   flex: 1;
   border: 2px solid #cee3e6;
   border-radius: 12px;
-  padding: 14px 15px;
+  padding: 12px 13px;
   font-family: "IBM Plex Mono", monospace;
   font-size: 0.95rem;
   transition: border-color 0.2s ease, box-shadow 0.2s ease;
-  min-height: 52px;
+  min-height: 46px;
 }
 
 input[type="text"]:focus {
@@ -233,7 +233,7 @@ input[type="text"]:focus {
   font-weight: 700;
   font-size: 0.95rem;
   cursor: pointer;
-  min-height: 44px;
+  min-height: 40px;
 }
 
 .input-row .btn {
@@ -242,7 +242,7 @@ input[type="text"]:focus {
 
 .preset-wrap {
   margin-top: auto;
-  padding-top: 16px;
+  padding-top: 12px;
   border-top: 1px solid rgba(136, 180, 212, 0.2);
 }
 
